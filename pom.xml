@@ -1,7 +1,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
+    
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
     <version>0.1.0-SNAPSHOT</version>
@@ -10,12 +10,12 @@
     <description>Spring boot starter/autoconfig for BeanMapper</description>
     <inceptionYear>2017</inceptionYear>
     <url>http://www.42.nl</url>
-
+    
     <organization>
         <name>42 BV</name>
         <url>http://blog.42.nl/</url>
     </organization>
-
+    
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -23,19 +23,19 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-
+    
     <scm>
         <url>scm:git://stash.42.nl:7999/42bv/beanmapper-spring-boot-starter.git</url>
         <connection>scm:git://stash.42.nl:7999/42bv/beanmapper-spring-boot-starter.git</connection>
     </scm>
-
+    
     <developers>
         <developer>
             <name>Bas de Vos</name>
             <organization>42</organization>
         </developer>
     </developers>
-
+    
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -46,24 +46,62 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-
+    
     <properties>
-        <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- Reporting -->
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <maven.cobertura.version>2.5.2</maven.cobertura.version>
         <maven.javadoc.version>2.8</maven.javadoc.version>
         <maven.project.version>2.4</maven.project.version>
         <maven.site.plugin.version>3.3</maven.site.plugin.version>
     </properties>
-
+    
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>io.beanmapper</groupId>
+            <artifactId>beanmapper-spring</artifactId>
+            <version>0.1.8</version>
+            <optional>true</optional>
+        </dependency>
 
+        <!-- TEST dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
+    
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>1.5.2.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -75,17 +113,6 @@
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>${project.build.sourceEncoding}</encoding>
-                </configuration>
-            </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -99,7 +126,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -113,7 +139,6 @@
                     </execution>
                 </executions>
             </plugin>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -128,8 +153,7 @@
                     </execution>
                 </executions>
             </plugin>
-
         </plugins>
     </build>
-
+    
 </project>
