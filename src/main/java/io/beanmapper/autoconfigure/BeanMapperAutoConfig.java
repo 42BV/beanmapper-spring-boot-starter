@@ -3,13 +3,18 @@ package io.beanmapper.autoconfigure;
 import static java.util.Collections.singletonList;
 
 import java.util.List;
+import java.util.Set;
 
 import org.hibernate.proxy.HibernateProxy;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -39,6 +44,7 @@ import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
 @EnableConfigurationProperties(BeanMapperProperties.class)
 public class BeanMapperAutoConfig {
 
+    private final Logger log = LoggerFactory.getLogger(BeanMapperAutoConfig.class);
     @Autowired
     private BeanMapperProperties props;
     @Autowired
@@ -58,21 +64,38 @@ public class BeanMapperAutoConfig {
     public BeanMapper beanMapper() {
         BeanMapperBuilder builder = new BeanMapperBuilder()
                 .setBeanUnproxy(new HibernateAwareBeanUnproxy())
-                .addProxySkipClass(Enum.class)
                 .addConverter(new IdToEntityBeanConverter(applicationContext));
-        if (props.getPackagePrefix() != null) {
-            builder.addPackagePrefix(props.getPackagePrefix());
-        }
+        addPackagePrefix(builder);
         if (builderCustomizer != null) {
             builderCustomizer.customize(builder);
         }
         return builder.build();
     }
 
+    private void addPackagePrefix(BeanMapperBuilder builder) {
+        String packagePrefix = props.getPackagePrefix();
+        if (packagePrefix != null) {
+            builder.addPackagePrefix(packagePrefix);
+            log.info("Set beanmapper packagePrefix [{}]", packagePrefix);
+        } else {
+            try {
+                log.info("No beanmapper.package-prefix found in environment properties, defaulting to SpringBootApplication annotated class.");
+                Set<Class<?>> appClasses = new EntityScanner(applicationContext).scan(SpringBootApplication.class);
+                Class<?> appClass = appClasses.iterator().next();
+                builder.addPackagePrefix(appClass);
+                log.info("Set beanmapper packagePrefix [{}]", appClass);
+            } catch (ClassNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
     @Configuration
     @ConditionalOnWebApplication
+    @ConditionalOnClass({ EntityInformation.class })
     static class MergedFormConfig extends WebMvcConfigurerAdapter {
 
+        private final Logger log = LoggerFactory.getLogger(MergedFormConfig.class);
         @Autowired(required = false)
         private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
         @Autowired
@@ -86,6 +109,7 @@ public class BeanMapperAutoConfig {
         @Override
         public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
             if (mappingJackson2HttpMessageConverter != null) {
+                log.info("Adding MergedFormArgumentResolver to MVC application.");
                 argumentResolvers.add(new MergedFormMethodArgumentResolver(
                         singletonList(new StructuredJsonMessageConverter(mappingJackson2HttpMessageConverter)),
                         beanMapper,

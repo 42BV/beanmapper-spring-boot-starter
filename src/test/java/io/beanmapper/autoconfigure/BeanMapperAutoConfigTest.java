@@ -67,6 +67,7 @@ public class BeanMapperAutoConfigTest {
 
     }
 
+    @Configuration
     static class ConfigWithBeanMapperBuilderCustomizer {
 
         @Bean

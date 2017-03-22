@@ -82,7 +82,6 @@
             <groupId>io.beanmapper</groupId>
             <artifactId>beanmapper-spring</artifactId>
             <version>0.1.8</version>
-            <optional>true</optional>
         </dependency>
 
         <!-- TEST dependencies -->
