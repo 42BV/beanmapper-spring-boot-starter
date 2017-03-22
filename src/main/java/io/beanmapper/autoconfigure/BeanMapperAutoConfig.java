@@ -1,6 +1,7 @@
 package io.beanmapper.autoconfigure;
 
-import java.util.Collections;
+import static java.util.Collections.singletonList;
+
 import java.util.List;
 
 import org.hibernate.proxy.HibernateProxy;
@@ -8,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -35,13 +35,9 @@ import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
  * will be added to the Spring MVC context.
  */
 @Configuration
-@ConditionalOnMissingBean(BeanMapper.class)
-@ConditionalOnProperty("beanmapper.packagePrefix")
-@ConditionalOnClass({ HibernateProxy.class, EntityInformation.class })
-@ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(BeanMapperProperties.class)
-public class BeanMapperAutoConfig extends WebMvcConfigurerAdapter {
+public class BeanMapperAutoConfig {
 
     @Autowired
     private BeanMapperProperties props;
@@ -49,8 +45,6 @@ public class BeanMapperAutoConfig extends WebMvcConfigurerAdapter {
     private ApplicationContext applicationContext;
     @Autowired(required = false)
     private BeanMapperBuilderCustomizer builderCustomizer;
-    @Autowired(required = false)
-    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
     /**
      * Creates a {@link BeanMapper} bean with spring-data-jpa defaults.
@@ -59,29 +53,44 @@ public class BeanMapperAutoConfig extends WebMvcConfigurerAdapter {
      * @return BeanMapper
      */
     @Bean
+    @ConditionalOnMissingBean(BeanMapper.class)
+    @ConditionalOnClass({ HibernateProxy.class, EntityInformation.class })
     public BeanMapper beanMapper() {
         BeanMapperBuilder builder = new BeanMapperBuilder()
-                .addPackagePrefix(props.getPackagePrefix())
                 .setBeanUnproxy(new HibernateAwareBeanUnproxy())
                 .addProxySkipClass(Enum.class)
                 .addConverter(new IdToEntityBeanConverter(applicationContext));
+        if (props.getPackagePrefix() != null) {
+            builder.addPackagePrefix(props.getPackagePrefix());
+        }
         if (builderCustomizer != null) {
             builderCustomizer.customize(builder);
         }
         return builder.build();
     }
 
-    /**
-     * If a {@link MappingJackson2HttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
-     */
-    @Override
-    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
-        if (mappingJackson2HttpMessageConverter != null) {
-            argumentResolvers.add(new MergedFormMethodArgumentResolver(
-                    Collections.singletonList(new StructuredJsonMessageConverter(mappingJackson2HttpMessageConverter)),
-                    beanMapper(),
-                    applicationContext));
+    @Configuration
+    @ConditionalOnWebApplication
+    static class MergedFormConfig extends WebMvcConfigurerAdapter {
+
+        @Autowired(required = false)
+        private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+        @Autowired
+        private BeanMapper beanMapper;
+        @Autowired
+        private ApplicationContext applicationContext;
+
+        /**
+         * If a {@link MappingJackson2HttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
+         */
+        @Override
+        public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+            if (mappingJackson2HttpMessageConverter != null) {
+                argumentResolvers.add(new MergedFormMethodArgumentResolver(
+                        singletonList(new StructuredJsonMessageConverter(mappingJackson2HttpMessageConverter)),
+                        beanMapper,
+                        applicationContext));
+            }
         }
     }
-
 }
