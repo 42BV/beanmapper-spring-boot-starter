@@ -2,6 +2,9 @@ package io.beanmapper.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+/**
+ * Properties for the {@link BeanMapperAutoConfig}
+ */
 @ConfigurationProperties("beanmapper")
 public class BeanMapperProperties {
 

@@ -27,47 +27,61 @@ import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
 
+/**
+ * In no BeanMapper bean is found, it will be created with sensible webapplication/spring-data-jpa mapping defaults.
+ * It's possible to customize the BeanMapperBuilder by adding a bean of type {@link BeanMapperBuilderCustomizer} 
+ * to your configuration.
+ * When a {@link MappingJackson2HttpMessageConverter} bean is found, a {@link MergedFormMethodArgumentResolver} 
+ * will be added to the Spring MVC context.
+ */
 @Configuration
 @ConditionalOnMissingBean(BeanMapper.class)
 @ConditionalOnProperty("beanmapper.packagePrefix")
 @ConditionalOnClass({ HibernateProxy.class, EntityInformation.class })
+@ConditionalOnWebApplication
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(BeanMapperProperties.class)
-public class BeanMapperAutoConfig {
+public class BeanMapperAutoConfig extends WebMvcConfigurerAdapter {
 
     @Autowired
     private BeanMapperProperties props;
     @Autowired
-    public ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
+    @Autowired(required = false)
+    private BeanMapperBuilderCustomizer builderCustomizer;
+    @Autowired(required = false)
+    private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
 
+    /**
+     * Creates a {@link BeanMapper} bean with spring-data-jpa defaults.
+     * If a {@link BeanMapperBuilderCustomizer} bean is found, uses this to 
+     * customize the builder before the {@link BeanMapper} is build.
+     * @return BeanMapper
+     */
     @Bean
     public BeanMapper beanMapper() {
-        return new BeanMapperBuilder()
+        BeanMapperBuilder builder = new BeanMapperBuilder()
                 .addPackagePrefix(props.getPackagePrefix())
                 .setBeanUnproxy(new HibernateAwareBeanUnproxy())
                 .addProxySkipClass(Enum.class)
-                .addConverter(new IdToEntityBeanConverter(applicationContext))
-                // add extra converters
-                .build();
+                .addConverter(new IdToEntityBeanConverter(applicationContext));
+        if (builderCustomizer != null) {
+            builderCustomizer.customize(builder);
+        }
+        return builder.build();
     }
 
-    @Configuration
-    @ConditionalOnWebApplication
-    static class MergedFormWebConfig extends WebMvcConfigurerAdapter {
-
-        @Autowired
-        private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
-        @Autowired
-        private BeanMapper beanMapper;
-        @Autowired
-        private ApplicationContext applicationContext;
-
-        @Override
-        public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+    /**
+     * If a {@link MappingJackson2HttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        if (mappingJackson2HttpMessageConverter != null) {
             argumentResolvers.add(new MergedFormMethodArgumentResolver(
                     Collections.singletonList(new StructuredJsonMessageConverter(mappingJackson2HttpMessageConverter)),
-                    beanMapper,
+                    beanMapper(),
                     applicationContext));
         }
     }
+
 }
