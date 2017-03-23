@@ -2,16 +2,16 @@
 
 Spring boot starter/autoconfig project for Beanmapper
 
-For more information about BeanMapper: http://beanmapper.io
-And the BeanMapper Spring project: https://github.com/42BV/beanmapper-spring
+* For more information about BeanMapper: http://beanmapper.io
+* The BeanMapper-Spring project: https://github.com/42BV/beanmapper-spring
 
-# Features
+## Features
 
 Auto-configures a `BeamMapper` instance and adds it as a spring bean to the `ApplicationContext`.
 All custom implementations of `BeanConverter` found in the application's packages are instantiated and added to the `BeanMapper`.  
 A `MergedFormMethodArgumentResolver` is instantiated and added to the already configured Spring MVC argument resolvers.
 
-# Usage
+## Usage
 
 Add this maven dependency to your project and you can start wiring the `BeanMapper` instance:
 
@@ -23,7 +23,7 @@ Add this maven dependency to your project and you can start wiring the `BeanMapp
 </dependency>
 ```
 
-# Customization
+## Customization
 
 1. By default, the package of the `@SpringBootApplication` annotated class will be used as root where `BeanMapper` will look for classes to convert and
 where it will search for implementors of `BeanConverter` to instantiate and configure.
@@ -36,7 +36,7 @@ If you want to override this package, add the `beanmapper.package-prefix=<custom
 public BeanMapperBuilderCustomizer beanMapperCustomizer() {
     return builder -> {
         // After the autoconfiguration is done with the BeanMapperBuilder,
-        // control over this builder is passed over to this callback just before build()
+        // control over this builder is passed to this callback just before build()
         // is called to create the BeanMapper.
     };
 }
