@@ -25,8 +25,10 @@
     </licenses>
     
     <scm>
-        <url>scm:git://stash.42.nl:7999/42bv/beanmapper-spring-boot-starter.git</url>
-        <connection>scm:git://stash.42.nl:7999/42bv/beanmapper-spring-boot-starter.git</connection>
+        <url>https://github.com/42BV/beanmapper-spring-boot-starter</url>
+        <connection>scm:git://github.com/42BV/beanmapper-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</developerConnection>
+        
     </scm>
     
     <developers>
