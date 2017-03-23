@@ -16,6 +16,19 @@ public class BeanMapperProperties {
      */
     private String packagePrefix;
 
+    /**
+     * Tell the beanmapper to use Hibernate unproxy mechanism.
+     */
+    private boolean useHibernateUnproxy = true;
+
+    public boolean isUseHibernateUnproxy() {
+        return useHibernateUnproxy;
+    }
+
+    public void setUseHibernateUnproxy(boolean hibernateUnproxy) {
+        this.useHibernateUnproxy = hibernateUnproxy;
+    }
+
     public String getPackagePrefix() {
         return packagePrefix;
     }

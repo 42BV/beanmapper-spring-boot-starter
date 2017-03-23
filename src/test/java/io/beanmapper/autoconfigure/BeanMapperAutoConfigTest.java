@@ -3,6 +3,7 @@ package io.beanmapper.autoconfigure;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
 import static org.springframework.boot.test.util.EnvironmentTestUtils.addEnvironment;
+import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 import java.util.List;
 
@@ -22,11 +23,15 @@ import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.BeanFieldMatch;
 import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
+import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 
 public class BeanMapperAutoConfigTest {
 
-    private static final String BEANMAPPER_REQUIRED_PROP = "beanmapper.package-prefix=io.beanmapper.autoconfigure";
+    private static final String BEANMAPPER_PACKAGE_PREFIX_PROP = "beanmapper.package-prefix=io.beanmapper.autoconfigure";
+    private static final String BEANMAPPER_USE_HIBERNATE_UNPROXY_PROP = "beanmapper.use-hibernate-unproxy=false";
     private AnnotationConfigWebApplicationContext context;
 
     @After
@@ -53,7 +58,14 @@ public class BeanMapperAutoConfigTest {
     @Test
     public void autoconfig_shouldNotCreateBeanMapper_ifAlreadyExists() {
         loadApplicationContext(ConfigWithBeanMapper.class);
-        assertBeanMapper(0, 11);
+        assertBeanMapper(0, 11, false);
+        assertMergedFormArgResolver();
+    }
+
+    @Test
+    public void autoconfig_shouldCreateBeanMapper_withDefaultUnproxy_whenEnvIsSet() {
+        loadApplicationContext(BEANMAPPER_USE_HIBERNATE_UNPROXY_PROP);
+        assertBeanMapper(1, 12, false);
         assertMergedFormArgResolver();
     }
 
@@ -92,6 +104,10 @@ public class BeanMapperAutoConfigTest {
     }
 
     private void assertBeanMapper(int expectedNumberOfPackagePrefixes, int expectedNumberOfConverters) {
+        assertBeanMapper(expectedNumberOfPackagePrefixes, expectedNumberOfConverters, true);
+    }
+
+    private void assertBeanMapper(int expectedNumberOfPackagePrefixes, int expectedNumberOfConverters, boolean hibernateUnproxy) {
         BeanMapper mapper = context.getBean(BeanMapper.class);
         io.beanmapper.config.Configuration config = mapper.getConfiguration();
         assertEquals(expectedNumberOfPackagePrefixes, config.getPackagePrefixes().size());
@@ -99,6 +115,12 @@ public class BeanMapperAutoConfigTest {
             assertEquals("io.beanmapper.autoconfigure", config.getPackagePrefixes().get(0));
         }
         assertEquals(expectedNumberOfConverters, config.getBeanConverters().size());
+        BeanUnproxy unproxyDelegate = (BeanUnproxy) getField(config.getBeanUnproxy(), "delegate");
+        if (hibernateUnproxy) {
+            assertEquals(HibernateAwareBeanUnproxy.class, unproxyDelegate.getClass());
+        } else {
+            assertEquals(DefaultBeanUnproxy.class, unproxyDelegate.getClass());
+        }
     }
 
     private void assertMergedFormArgResolver() {
@@ -110,13 +132,14 @@ public class BeanMapperAutoConfigTest {
         assertEquals(1, argResolvers.size());
     }
 
-    private void loadApplicationContext() {
-        loadApplicationContext(null);
+    private void loadApplicationContext(String... env) {
+        loadApplicationContext(null, env);
     }
 
-    private void loadApplicationContext(Class<?> config) {
+    private void loadApplicationContext(Class<?> config, String... env) {
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
-        addEnvironment(applicationContext, BEANMAPPER_REQUIRED_PROP);
+        addEnvironment(applicationContext, env);
+        addEnvironment(applicationContext, BEANMAPPER_PACKAGE_PREFIX_PROP);
         if (config != null) {
             applicationContext.register(config);
         }

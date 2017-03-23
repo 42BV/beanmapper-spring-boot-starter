@@ -5,7 +5,6 @@ import static java.util.Collections.singletonList;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,34 +59,38 @@ public class BeanMapperAutoConfig {
      */
     @Bean
     @ConditionalOnMissingBean(BeanMapper.class)
-    @ConditionalOnClass({ HibernateProxy.class, EntityInformation.class })
+    @ConditionalOnClass({ EntityInformation.class })
     public BeanMapper beanMapper() {
         BeanMapperBuilder builder = new BeanMapperBuilder()
-                .setBeanUnproxy(new HibernateAwareBeanUnproxy())
+                .addPackagePrefix(determinePackagePrefix())
                 .addConverter(new IdToEntityBeanConverter(applicationContext));
-        addPackagePrefix(builder);
+        if (props.isUseHibernateUnproxy()) {
+            builder.setBeanUnproxy(new HibernateAwareBeanUnproxy());
+            log.info("Set HibernateAwareUnproxy as bean unproxy mechanism.");
+        } else {
+            log.info("No HibernateAwareUnproxy set, keeping default unproxy mechanism.");
+        }
         if (builderCustomizer != null) {
+            log.info("Customizing BeanMapperBuilder...");
             builderCustomizer.customize(builder);
         }
         return builder.build();
     }
 
-    private void addPackagePrefix(BeanMapperBuilder builder) {
+    private String determinePackagePrefix() {
         String packagePrefix = props.getPackagePrefix();
-        if (packagePrefix != null) {
-            builder.addPackagePrefix(packagePrefix);
-            log.info("Set beanmapper packagePrefix [{}]", packagePrefix);
-        } else {
+        if (packagePrefix == null) {
             try {
                 log.info("No beanmapper.package-prefix found in environment properties, defaulting to SpringBootApplication annotated class.");
                 Set<Class<?>> appClasses = new EntityScanner(applicationContext).scan(SpringBootApplication.class);
                 Class<?> appClass = appClasses.iterator().next();
-                builder.addPackagePrefix(appClass);
-                log.info("Set beanmapper packagePrefix [{}]", appClass);
+                packagePrefix = appClass.getPackage().getName();
             } catch (ClassNotFoundException e) {
                 throw new RuntimeException(e);
             }
         }
+        log.info("Set beanmapper packagePrefix [{}]", packagePrefix);
+        return packagePrefix;
     }
 
     @Configuration
