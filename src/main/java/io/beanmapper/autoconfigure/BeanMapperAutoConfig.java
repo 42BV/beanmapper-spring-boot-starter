@@ -1,19 +1,21 @@
 package io.beanmapper.autoconfigure;
 
 import static java.util.Collections.singletonList;
+import static org.springframework.beans.BeanUtils.instantiate;
+import static org.springframework.beans.BeanUtils.instantiateClass;
 
 import java.util.List;
-import java.util.Set;
+
+import javax.annotation.PostConstruct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanInstantiationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.boot.autoconfigure.web.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +52,12 @@ public class BeanMapperAutoConfig {
     private ApplicationContext applicationContext;
     @Autowired(required = false)
     private BeanMapperBuilderCustomizer builderCustomizer;
+    private ApplicationScanner appScanner;
+
+    @PostConstruct
+    private void initApplicationScanner() {
+        appScanner = new ApplicationScanner(applicationContext);
+    }
 
     /**
      * Creates a {@link BeanMapper} bean with spring-data-jpa defaults.
@@ -61,36 +69,61 @@ public class BeanMapperAutoConfig {
     @ConditionalOnMissingBean(BeanMapper.class)
     @ConditionalOnClass({ EntityInformation.class })
     public BeanMapper beanMapper() {
+        String packagePrefix = determinePackagePrefix();
         BeanMapperBuilder builder = new BeanMapperBuilder()
-                .addPackagePrefix(determinePackagePrefix())
+                .addPackagePrefix(packagePrefix)
                 .addConverter(new IdToEntityBeanConverter(applicationContext));
-        if (props.isUseHibernateUnproxy()) {
-            builder.setBeanUnproxy(new HibernateAwareBeanUnproxy());
-            log.info("Set HibernateAwareUnproxy as bean unproxy mechanism.");
-        } else {
-            log.info("No HibernateAwareUnproxy set, keeping default unproxy mechanism.");
-        }
-        if (builderCustomizer != null) {
-            log.info("Customizing BeanMapperBuilder...");
-            builderCustomizer.customize(builder);
-        }
+        addCustomConverters(builder, packagePrefix);
+        setUnproxy(builder);
+        customize(builder);
         return builder.build();
     }
 
     private String determinePackagePrefix() {
         String packagePrefix = props.getPackagePrefix();
         if (packagePrefix == null) {
-            try {
-                log.info("No beanmapper.package-prefix found in environment properties, defaulting to SpringBootApplication annotated class.");
-                Set<Class<?>> appClasses = new EntityScanner(applicationContext).scan(SpringBootApplication.class);
-                Class<?> appClass = appClasses.iterator().next();
-                packagePrefix = appClass.getPackage().getName();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            log.info("No beanmapper.package-prefix found in environment properties, "
+                    + "defaulting to SpringBootApplication annotated class package.");
+            packagePrefix = appScanner.findApplicationPackage()
+                    .orElseThrow(() -> new RuntimeException(
+                            "Application package not found, define beanmapper.package-prefix property in your environment!"));
         }
         log.info("Set beanmapper packagePrefix [{}]", packagePrefix);
         return packagePrefix;
+    }
+
+    private void addCustomConverters(BeanMapperBuilder builder, String basePackage) {
+        appScanner.findBeanConverterClasses(basePackage).forEach(cls -> {
+            log.info("Found bean converter candidate class [{}], now trying to instantiate...", cls);
+            try {
+                builder.addConverter(instantiate(cls));
+                log.info("Added bean converter [{}] to bean mapper.", cls);
+            } catch (BeanInstantiationException e) {
+                log.debug("Cannot instantiate bean of class [{}] with no-arg constructor, now trying appContext constructor...", cls);
+                try {
+                    builder.addConverter(instantiateClass(cls.getConstructor(ApplicationContext.class), applicationContext));
+                    log.info("Added bean converter [{}] to bean mapper.", cls);
+                } catch (BeanInstantiationException | NoSuchMethodException | SecurityException ex) {
+                    log.warn("Cannot instantiate bean of class [{}] with applicationContext constructor, this converter will be skipped!", cls);
+                }
+            }
+        });
+    }
+
+    private void setUnproxy(BeanMapperBuilder builder) {
+        if (props.isUseHibernateUnproxy()) {
+            builder.setBeanUnproxy(new HibernateAwareBeanUnproxy());
+            log.info("Set HibernateAwareUnproxy as bean unproxy mechanism.");
+        } else {
+            log.info("use-hibernate-unproxy set to false, keeping default unproxy mechanism.");
+        }
+    }
+
+    private void customize(BeanMapperBuilder builder) {
+        if (builderCustomizer != null) {
+            log.info("Customizing BeanMapperBuilder...");
+            builderCustomizer.customize(builder);
+        }
     }
 
     @Configuration
