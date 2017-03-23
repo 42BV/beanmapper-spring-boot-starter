@@ -150,6 +150,8 @@ public class BeanMapperAutoConfig {
                         singletonList(new StructuredJsonMessageConverter(mappingJackson2HttpMessageConverter)),
                         beanMapper,
                         applicationContext));
+            } else {
+                log.warn("No MergedFormArgumentResolver added to MVC application because no MappingJackson2HttpMessageConverter bean found!");
             }
         }
     }
