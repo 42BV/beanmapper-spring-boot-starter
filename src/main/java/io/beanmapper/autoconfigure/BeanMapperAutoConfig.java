@@ -71,9 +71,13 @@ public class BeanMapperAutoConfig {
     public BeanMapper beanMapper() {
         String packagePrefix = determinePackagePrefix();
         BeanMapperBuilder builder = new BeanMapperBuilder()
+                .setApplyStrictMappingConvention(props.isApplyStrictMappingConvention())
+                .setStrictSourceSuffix(props.getStrictSourceSuffix())
+                .setStrictTargetSuffix(props.getStrictTargetSuffix())
                 .addPackagePrefix(packagePrefix)
                 .addConverter(new IdToEntityBeanConverter(applicationContext));
         addCustomConverters(builder, packagePrefix);
+        addCustomBeanPairs(builder);
         setUnproxy(builder);
         customize(builder);
         return builder.build();
@@ -90,6 +94,18 @@ public class BeanMapperAutoConfig {
         }
         log.info("Set beanmapper packagePrefix [{}]", packagePrefix);
         return packagePrefix;
+    }
+
+    private void addCustomBeanPairs(BeanMapperBuilder builder) {
+        appScanner.findBeanPairInstructions().forEach(cls -> {
+            BeanMapToClass beanMapToClass = cls.getDeclaredAnnotation(BeanMapToClass.class);
+            BeanMapFromClass beanMapFromClass = cls.getDeclaredAnnotation(BeanMapFromClass.class);
+            if (beanMapToClass != null) {
+                builder.addBeanPairWithStrictSource(cls, beanMapToClass.target());
+            } else if (beanMapFromClass != null) {
+                builder.addBeanPairWithStrictTarget(beanMapFromClass.source(), cls);
+            }
+        });
     }
 
     private void addCustomConverters(BeanMapperBuilder builder, String basePackage) {
