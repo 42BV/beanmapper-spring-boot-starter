@@ -3,6 +3,8 @@ package io.beanmapper.autoconfigure;
 import static io.beanmapper.utils.Classes.forName;
 
 import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -46,6 +48,20 @@ class ApplicationScanner {
         } catch (ClassNotFoundException | NoSuchElementException e) {
             log.error("Cannot find class annotated with SpringBootApplication. ", e);
             return Optional.empty();
+        }
+    }
+
+    Set<Class<?>> findBeanPairInstructions() {
+        Set<Class<?>> foundAnnotations = findBeanPairInstructions(BeanMapFromClass.class);
+        foundAnnotations.addAll(findBeanPairInstructions(BeanMapToClass.class));
+        return foundAnnotations;
+    }
+
+    private Set<Class<?>> findBeanPairInstructions(Class<? extends Annotation> markerAnnotation) {
+        try {
+            return entityScanner.scan(markerAnnotation);
+        } catch (ClassNotFoundException | NoSuchElementException e) {
+            return Collections.emptySet();
         }
     }
 

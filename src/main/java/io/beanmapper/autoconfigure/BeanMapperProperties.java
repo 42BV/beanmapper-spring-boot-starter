@@ -21,6 +21,12 @@ public class BeanMapperProperties {
      */
     private boolean useHibernateUnproxy = true;
 
+    private Boolean applyStrictMappingConvention = true;
+
+    private String strictSourceSuffix = "Form";
+
+    private String strictTargetSuffix = "Result";
+
     public boolean isUseHibernateUnproxy() {
         return useHibernateUnproxy;
     }
@@ -37,4 +43,27 @@ public class BeanMapperProperties {
         this.packagePrefix = basePackageName;
     }
 
+    public Boolean isApplyStrictMappingConvention() {
+        return applyStrictMappingConvention;
+    }
+
+    public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+        this.applyStrictMappingConvention = applyStrictMappingConvention;
+    }
+
+    public String getStrictSourceSuffix() {
+        return strictSourceSuffix;
+    }
+
+    public void setStrictSourceSuffix(String strictSourceSuffix) {
+        this.strictSourceSuffix = strictSourceSuffix;
+    }
+
+    public String getStrictTargetSuffix() {
+        return strictTargetSuffix;
+    }
+
+    public void setStrictTargetSuffix(String strictTargetSuffix) {
+        this.strictTargetSuffix = strictTargetSuffix;
+    }
 }

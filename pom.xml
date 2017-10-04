@@ -4,7 +4,7 @@
     
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
-    <version>0.2.0-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>42 BeanMapper Spring Boot Starter</name>
     <description>Spring boot starter/autoconfig for BeanMapper</description>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>io.beanmapper</groupId>
             <artifactId>beanmapper-spring</artifactId>
-            <version>0.1.8</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- TEST dependencies -->
