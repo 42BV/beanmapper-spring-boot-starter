@@ -1,3 +1,5 @@
+[![BCH compliance](https://bettercodehub.com/edge/badge/42BV/beanmapper-spring-boot-starter?branch=master)](https://bettercodehub.com/)
+
 # beanmapper-spring-boot-starter
 
 Spring boot starter/autoconfig project for Beanmapper

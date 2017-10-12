@@ -8,6 +8,15 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import io.beanmapper.BeanMapper;
+import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.core.collections.CollectionHandler;
+import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.spring.converter.IdToEntityBeanConverter;
+import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
+import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
+import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
@@ -25,13 +34,6 @@ import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
-
-import io.beanmapper.BeanMapper;
-import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.spring.converter.IdToEntityBeanConverter;
-import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
-import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
-import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
 
 /**
  * In no BeanMapper bean is found, it will be created with sensible webapplication/spring-data-jpa mapping defaults.
@@ -52,11 +54,13 @@ public class BeanMapperAutoConfig {
     private ApplicationContext applicationContext;
     @Autowired(required = false)
     private BeanMapperBuilderCustomizer builderCustomizer;
-    private ApplicationScanner appScanner;
+    private ApplicationScanner collectionHandlerAppScanner;
+    private ApplicationScanner beanConverterAppScanner;
 
     @PostConstruct
     private void initApplicationScanner() {
-        appScanner = new ApplicationScanner(applicationContext);
+        collectionHandlerAppScanner = new ApplicationScanner(applicationContext);
+        beanConverterAppScanner = new ApplicationScanner(applicationContext);
     }
 
     /**
@@ -76,6 +80,7 @@ public class BeanMapperAutoConfig {
                 .setStrictTargetSuffix(props.getStrictTargetSuffix())
                 .addPackagePrefix(packagePrefix)
                 .addConverter(new IdToEntityBeanConverter(applicationContext));
+        addCollectionHandlers(builder, packagePrefix);
         addCustomConverters(builder, packagePrefix);
         addCustomBeanPairs(builder);
         setUnproxy(builder);
@@ -88,7 +93,7 @@ public class BeanMapperAutoConfig {
         if (packagePrefix == null) {
             log.info("No beanmapper.package-prefix found in environment properties, "
                     + "defaulting to SpringBootApplication annotated class package.");
-            packagePrefix = appScanner.findApplicationPackage()
+            packagePrefix = beanConverterAppScanner.findApplicationPackage()
                     .orElseThrow(() -> new RuntimeException(
                             "Application package not found, define beanmapper.package-prefix property in your environment!"));
         }
@@ -97,7 +102,7 @@ public class BeanMapperAutoConfig {
     }
 
     private void addCustomBeanPairs(BeanMapperBuilder builder) {
-        appScanner.findBeanPairInstructions().forEach(cls -> {
+        beanConverterAppScanner.findBeanPairInstructions().forEach(cls -> {
             BeanMapToClass beanMapToClass = cls.getDeclaredAnnotation(BeanMapToClass.class);
             BeanMapFromClass beanMapFromClass = cls.getDeclaredAnnotation(BeanMapFromClass.class);
             if (beanMapToClass != null) {
@@ -108,22 +113,42 @@ public class BeanMapperAutoConfig {
         });
     }
 
-    private void addCustomConverters(BeanMapperBuilder builder, String basePackage) {
-        appScanner.findBeanConverterClasses(basePackage).forEach(cls -> {
-            log.info("Found bean converter candidate class [{}], now trying to instantiate...", cls);
-            try {
-                builder.addConverter(instantiate(cls));
-                log.info("Added bean converter [{}] to bean mapper.", cls);
-            } catch (BeanInstantiationException e) {
-                log.debug("Cannot instantiate bean of class [{}] with no-arg constructor, now trying appContext constructor...", cls);
-                try {
-                    builder.addConverter(instantiateClass(cls.getConstructor(ApplicationContext.class), applicationContext));
-                    log.info("Added bean converter [{}] to bean mapper.", cls);
-                } catch (BeanInstantiationException | NoSuchMethodException | SecurityException ex) {
-                    log.warn("Cannot instantiate bean of class [{}] with applicationContext constructor, this converter will be skipped!", cls);
-                }
+    private void addCollectionHandlers(BeanMapperBuilder builder, String basePackage) {
+        collectionHandlerAppScanner.findCollectionHandlerClasses(basePackage).forEach(cls -> {
+            CollectionHandler collectionHandler = instantiateClassAppContextOptional(cls, "collection handler");
+            if (collectionHandler != null) {
+                builder.addCollectionHandler(collectionHandler);
             }
         });
+    }
+
+    private void addCustomConverters(BeanMapperBuilder builder, String basePackage) {
+        beanConverterAppScanner.findBeanConverterClasses(basePackage).forEach(cls -> {
+            BeanConverter converter = instantiateClassAppContextOptional(cls,"bean converter");
+            if (converter != null) {
+                builder.addConverter(converter);
+            }
+        });
+    }
+
+    private <T> T instantiateClassAppContextOptional(Class<T> cls, String label) {
+
+        log.info("Found {} candidate class [{}], now trying to instantiate...", label, cls);
+        try {
+            T created = instantiate(cls);
+            log.info("Added [{}] [{}] to bean mapper.", label, cls);
+            return created;
+        } catch (BeanInstantiationException e) {
+            log.debug("Cannot instantiate bean of class [{}] with no-arg constructor, now trying appContext constructor...", cls);
+            try {
+                T created = instantiateClass(cls.getConstructor(ApplicationContext.class), applicationContext);
+                log.info("Added [{}] [{}] to bean mapper.", label, cls);
+                return created;
+            } catch (BeanInstantiationException | NoSuchMethodException | SecurityException ex) {
+                log.warn("Cannot instantiate bean of class [{}] with applicationContext constructor, this [{}] will be skipped!", cls, label);
+            }
+        }
+        return null;
     }
 
     private void setUnproxy(BeanMapperBuilder builder) {

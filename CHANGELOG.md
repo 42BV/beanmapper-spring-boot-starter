@@ -5,6 +5,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Breaking change
+- Issue [#68](https://github.com/42BV/beanmapper/issues/68), **Change to BeanMapper interface**; the following methods are no longer supported:
+  - ```map(Object, Class, BeanInitializer, boolean)```
+  - ```map(Object, Class, boolean)```
+  - ```map(Collection, Class)```
+  - ```map(Collection, Class, Class)```
+
+  The following sugarcoated interfaces have been added:
+  - ```map(List, Class)```
+  - ```map(Set, Class)```
+  - ```map(Map, Class)``` 
+- Issue [#68](https://github.com/42BV/beanmapper/issues/68), **Change to BeanCollection annotation**; the following field is no longer supported:
+  - ```targetCollectionType```; the collection type is now inferred
+
+  The following field has replaced it:
+  - ```preferredCollectionClass```; states that if a collection is to be created, this preference is used instead of the CollectionHandler's default.
+- Issue [#59](https://github.com/42BV/beanmapper/issues/59), **BeanCollectionUsage default CLEAR, not REUSE**; the dominant choice for applications is to have CLEAR as collection usage strategy. By making this the default, it does not have to be configured. 
+### Architecture
+- Issue [#68](https://github.com/42BV/beanmapper/issues/68), **Streamlining of mapping of collections**; in the previous situation, the mapping of collections happened in two different ways, one by ```MapCollectionStrategy``` and the other by ```CollectionConverter```. The latter now defers the mapping process to the former. 
+### Added
+- Issue [#4](https://github.com/42BV/beanmapper-spring-boot-starter/issues/4), **Scan, instantiate and register CollectionHandlers**; the starter will automatically pick up all custom CollectionHandlers and make sure they are registered in the BeanMapperBuilder. 
+### Fixed
+- Issue [#68](https://github.com/42BV/beanmapper/issues/68), **Arrays.asList and anonymous collections handled incorrectly**; the root cause was the difference between the two handlings of the mappings for collections. By streamlining the architecture, this problem has been solved.
+- Issue [#76](https://github.com/42BV/beanmapper/issues/76), **Unproxy unable to deal with anonymous classes**; bean unproxying was unable to deal with anonymous classes. This has been fixed by making sure the SkippingBeanUnproxy checks for anonimity. If this is the case, the superclass will be passed to the unproxy delegate.
 
 ## [1.0.0] - 2017-10-04
 ### Added

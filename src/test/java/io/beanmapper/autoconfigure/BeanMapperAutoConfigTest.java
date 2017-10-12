@@ -2,10 +2,21 @@ package io.beanmapper.autoconfigure;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.springframework.boot.test.util.EnvironmentTestUtils.addEnvironment;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 import java.util.List;
+
+import io.beanmapper.BeanMapper;
+import io.beanmapper.config.BeanMapperBuilder;
+import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.collections.CollectionHandler;
+import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.core.unproxy.BeanUnproxy;
+import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
+import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
+import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 
 import org.junit.After;
 import org.junit.Test;
@@ -18,15 +29,6 @@ import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
-
-import io.beanmapper.BeanMapper;
-import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.core.BeanFieldMatch;
-import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.core.unproxy.BeanUnproxy;
-import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
-import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
-import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 
 public class BeanMapperAutoConfigTest {
 
@@ -44,14 +46,14 @@ public class BeanMapperAutoConfigTest {
     @Test
     public void autoconfig_shouldCreateBeanMapper_ifNotExists() {
         loadApplicationContext();
-        assertBeanMapper(1, 14);
+        assertBeanMapper(1, 16);
         assertMergedFormArgResolver();
     }
 
     @Test
     public void autoconfig_shouldCreateCustomizedBeanMapper_ifNotExists() {
         loadApplicationContext(ConfigWithBeanMapperBuilderCustomizer.class);
-        assertBeanMapper(1, 15);
+        assertBeanMapper(1, 17);
         assertMergedFormArgResolver();
     }
 
@@ -65,8 +67,23 @@ public class BeanMapperAutoConfigTest {
     @Test
     public void autoconfig_shouldCreateBeanMapper_withDefaultUnproxy_whenEnvIsSet() {
         loadApplicationContext(BEANMAPPER_USE_HIBERNATE_UNPROXY_PROP);
-        assertBeanMapper(1, 14, false);
+        assertBeanMapper(1, 16, false);
         assertMergedFormArgResolver();
+    }
+
+    @Test
+    public void autoconfig_shouldRegisterCollectionHandler_ifScanned() {
+        loadApplicationContext(BEANMAPPER_USE_HIBERNATE_UNPROXY_PROP);
+        BeanMapper mapper = context.getBean(BeanMapper.class);
+        List<CollectionHandler> customCollectionHandlers = mapper.getConfiguration().getCollectionHandlers()
+                .stream()
+                .filter(handler ->
+                    handler.getType().equals(TestEntity.class) ||
+                    handler.getType().equals(TestEntity2.class))
+                .collect(toList());
+        assertEquals(2, customCollectionHandlers.size());
+        TestCollectionHandlerWithAppCtx collectionHandler = (TestCollectionHandlerWithAppCtx)mapper.getConfiguration().getCollectionHandlerFor(TestEntity2.class);
+        assertNotNull(collectionHandler.getApplicationContext());
     }
 
     @Configuration
