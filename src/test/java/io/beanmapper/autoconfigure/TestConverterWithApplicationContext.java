@@ -1,8 +1,8 @@
 package io.beanmapper.autoconfigure;
 
-import org.springframework.context.ApplicationContext;
-
 import io.beanmapper.core.converter.SimpleBeanConverter;
+
+import org.springframework.context.ApplicationContext;
 
 public class TestConverterWithApplicationContext extends SimpleBeanConverter<String, Long> {
 

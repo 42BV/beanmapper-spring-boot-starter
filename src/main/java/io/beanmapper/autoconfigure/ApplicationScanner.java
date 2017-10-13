@@ -10,6 +10,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import io.beanmapper.core.collections.CollectionHandler;
+import io.beanmapper.core.converter.BeanConverter;
+import io.beanmapper.utils.Classes;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -19,9 +23,6 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
-
-import io.beanmapper.core.converter.BeanConverter;
-import io.beanmapper.utils.Classes;
 
 /**
  * Utility that helps searching for beans/classes within the application.
@@ -66,17 +67,30 @@ class ApplicationScanner {
     }
 
     Set<Class<? extends BeanConverter>> findBeanConverterClasses(String basePackage) {
-        Set<Class<? extends BeanConverter>> converterClasses = new HashSet<>();
-        classpathScanner.addIncludeFilter(new TypeFilter() {
+        return findClasses(basePackage, BeanConverter.class);
+    }
+
+    Set<Class<? extends CollectionHandler>> findCollectionHandlerClasses(String basePackage) {
+        return findClasses(basePackage, CollectionHandler.class);
+    }
+
+    private <T> Set<Class<? extends T>> findClasses(String basePackage, Class<T> lookForClass) {
+        Set<Class<? extends T>> converterClasses = new HashSet<>();
+        classpathScanner.addIncludeFilter(createTypeFilterForClass(lookForClass));
+        classpathScanner.findCandidateComponents(basePackage).forEach(
+                bd -> converterClasses.add((Class<T>) forName(bd.getBeanClassName())));
+        return converterClasses;
+    }
+
+    private TypeFilter createTypeFilterForClass(Class<?> clazz) {
+        return new TypeFilter() {
             @Override
             public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
                 String className = metadataReader.getClassMetadata().getClassName();
-                Class<?> clazz = Classes.forName(className);
-                return BeanConverter.class.isAssignableFrom(clazz);
+                Class<?> currentClass = Classes.forName(className);
+                return clazz.isAssignableFrom(currentClass);
             }
-        });
-        classpathScanner.findCandidateComponents(basePackage).forEach(
-                bd -> converterClasses.add((Class<? extends BeanConverter>) forName(bd.getBeanClassName())));
-        return converterClasses;
+        };
     }
+
 }
