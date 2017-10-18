@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.0.1] - 2017-10-18
+### Fixed
+- Issue [#19](https://github.com/42BV/beanmapper-spring/issues/19), **Spring handles multipart forms differently**; v4.1.6 deal with the multipart form by getting the parameterType as the target class. Later Spring versions (at least from 4.3.10.RELEASE onwards), do this by checking the genericParameterType. The solution is to check for the genericParameterType. If it exists, it is overwritten for the multipart form resolution attempt.
+
 ## [2.0.0] - 2017-10-13
 ### Breaking change
 - Issue [#68](https://github.com/42BV/beanmapper/issues/68), **Change to BeanMapper interface**; the following methods are no longer supported:
