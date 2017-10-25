@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- Issue [#83](https://github.com/42BV/beanmapper/issues/83), **The name field from an enum is not mapped to target field**; in the resolution of issue [#78](https://github.com/42BV/beanmapper/issues/78) the definition of getter fields has been tightened, because previously all private fields were tagged as available as well. One project made use of this loophole by reading the name field of an enumeration class to a String field. With the new fix this is no longer possible, since the name field is private. This fix makes an exception for the name field of an enum class. It will be considered available for reading.
+### Added
+- Issue [#6](https://github.com/42BV/beanmapper-spring-boot-starter/issues/6), **auto-register the JpaAfterClearFlusher**; when BeanMapper is in a JPA context, make sure the JpaAfterClearFlusher is registered with a valid EntityManager. This EM's flush can be called after a collection has been cleared. The result will be that the ORM is forced to execute its delete before its insert statement (the reverse of what would happen otherwise). Sample code:
+
+```
+@BeanCollection(elementType = ProjectSkill.class, flushAfterClear = true)
+public List<ProjectSkillForm> skills;
+```
+
+## [2.0.2] - 2017-10-18
+### Fixed
+- Issue [#21](https://github.com/42BV/beanmapper-spring/issues/21), **Multipart part name not used correctly**; the multipart part name was not handled correctly. Spring's multipart handler is now passed a MethodParameter which has the correct part name and also disables the parameter name explorer, so it is forced to used the overwritten part name.
 
 ## [2.0.2] - 2017-10-18
 ### Fixed

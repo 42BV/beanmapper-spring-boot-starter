@@ -29,4 +29,9 @@ public class TestCollectionHandlerWithAppCtx extends AbstractCollectionHandler<T
     public TestEntity2 copy(BeanMapper beanMapper, Class collectionElementClass, TestEntity2 source, TestEntity2 target) {
         return null;
     }
+
+    @Override
+    public int size(TestEntity2 targetCollection) {
+        return 0;
+    }
 }

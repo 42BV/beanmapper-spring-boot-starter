@@ -7,12 +7,14 @@ import static org.springframework.beans.BeanUtils.instantiateClass;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManager;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.spring.converter.IdToEntityBeanConverter;
+import io.beanmapper.spring.flusher.JpaAfterClearFlusher;
 import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
@@ -54,6 +56,9 @@ public class BeanMapperAutoConfig {
     private ApplicationContext applicationContext;
     @Autowired(required = false)
     private BeanMapperBuilderCustomizer builderCustomizer;
+    @Autowired(required = false)
+    private EntityManager entityManager;
+
     private ApplicationScanner collectionHandlerAppScanner;
     private ApplicationScanner beanConverterAppScanner;
 
@@ -83,9 +88,17 @@ public class BeanMapperAutoConfig {
         addCollectionHandlers(builder, packagePrefix);
         addCustomConverters(builder, packagePrefix);
         addCustomBeanPairs(builder);
+        addAfterClearFlusher(builder);
         setUnproxy(builder);
         customize(builder);
         return builder.build();
+    }
+
+    private void addAfterClearFlusher(BeanMapperBuilder builder) {
+        if (entityManager == null) {
+            return;
+        }
+        builder.addAfterClearFlusher(new JpaAfterClearFlusher(entityManager));
     }
 
     private String determinePackagePrefix() {

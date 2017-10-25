@@ -18,4 +18,9 @@ public class TestCollectionHandler extends AbstractCollectionHandler<TestEntity>
         return null;
     }
 
+    @Override
+    public int size(TestEntity targetCollection) {
+        return 0;
+    }
+
 }
