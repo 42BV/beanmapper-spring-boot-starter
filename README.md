@@ -21,7 +21,7 @@ Add this maven dependency to your project and you can start wiring the `BeanMapp
 <dependency>
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
-    <version>2.1.0</version>
+    <version>2.2.0</version>
 </dependency>
 ```
 
