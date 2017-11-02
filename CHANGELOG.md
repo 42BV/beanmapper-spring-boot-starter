@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.3.0] - 2017-11-02
+### Added
+- Issue [#92](https://github.com/42BV/beanmapper/issues/92), **BeanCollection no longer required for mapping collections**; BeanMapper is now capable of determining the collection element type of the target collection by examining the generic type. It will use this type as input for the mapping process. BeanCollection.elementType is no longer a required value. BeanMapper will merge collection information from target and source, giving preference to target information. 
+- Issue [#97](https://github.com/42BV/beanmapper/issues/97), **StringToEnumConverter replaced with AnyToEnumConverter**; this makes it possible to convert enums to enums as well. Functionality is required because lists are no longer copied by reference by default. 
+
 ## [2.2.0] - 2017-11-01
 ### Fixed
 - **BREAKING CHANGE** Issue [#93](https://github.com/42BV/beanmapper/issues/93), **config() not threadsafe**; it is possible for override configurations to be reused between threads, theoretically allowing fields to be changed before the map is called. This is not threadsafe. Now, nowhere is override configuration reused; it will always create a new override configuration. Both config() and wrapConfig() have been replaced with wrap(), which does the same as wrapConfig(). Internally, some OverrideConfiguration properties have been delegated to an OverrideField which takes care of returning the right value for a property. The clear() method has been removed; calling wrap automatically resets these properties (expect for downsize source/target, which are primarily used internally).
