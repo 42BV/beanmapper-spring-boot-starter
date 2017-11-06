@@ -1,6 +1,12 @@
+[![Build Status](https://travis-ci.org/42BV/beanmapper-spring-boot-starter.svg?branch=master)](https://travis-ci.org/42BV/beanmapper-spring-boot-starter)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1cd19a18411b4fab97a49af920d72af4)](https://www.codacy.com/app/42bv/beanmapper-spring-boot-starter)
 [![BCH compliance](https://bettercodehub.com/edge/badge/42BV/beanmapper-spring-boot-starter?branch=master)](https://bettercodehub.com/)
+[![codecov](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter/branch/master/graph/badge.svg)](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring-boot-starter)
+[![Javadocs](https://www.javadoc.io/badge/io.beanmapper/beanmapper-spring-boot-starter.svg)](https://www.javadoc.io/doc/io.beanmapper/beanmapper-spring-boot-starter)
+[![Apache 2](http://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
-# beanmapper-spring-boot-starter
+# BeanMapper Spring Boot Starter
 
 Spring boot starter/autoconfig project for Beanmapper
 
