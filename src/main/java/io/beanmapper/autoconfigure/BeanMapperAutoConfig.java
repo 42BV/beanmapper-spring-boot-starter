@@ -15,6 +15,7 @@ import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.spring.converter.IdToEntityBeanConverter;
 import io.beanmapper.spring.flusher.JpaAfterClearFlusher;
+import io.beanmapper.spring.security.SpringSecuredPropertyHandler;
 import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
@@ -80,7 +81,7 @@ public class BeanMapperAutoConfig {
     public BeanMapper beanMapper() {
         String packagePrefix = determinePackagePrefix();
         BeanMapperBuilder builder = new BeanMapperBuilder()
-                .setApplyStrictMappingConvention(props.isApplyStrictMappingConvention())
+                .setApplyStrictMappingConvention(props.getApplyStrictMappingConvention())
                 .setStrictSourceSuffix(props.getStrictSourceSuffix())
                 .setStrictTargetSuffix(props.getStrictTargetSuffix())
                 .addPackagePrefix(packagePrefix)
@@ -89,9 +90,17 @@ public class BeanMapperAutoConfig {
         addCustomConverters(builder, packagePrefix);
         addCustomBeanPairs(builder);
         addAfterClearFlusher(builder);
+        setSecuredPropertyHandler(builder);
         setUnproxy(builder);
         customize(builder);
         return builder.build();
+    }
+
+    private void setSecuredPropertyHandler(BeanMapperBuilder builder) {
+        if (!props.getApplySecuredProperties()) {
+            return;
+        }
+        builder.setSecuredPropertyHandler(new SpringSecuredPropertyHandler());
     }
 
     private void addAfterClearFlusher(BeanMapperBuilder builder) {
