@@ -5,10 +5,17 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+This release effectively adds the following functionality:
+- **@BeanRoleSecured annotation**; checks the Principal for any one of the stated roles. If allowed, the mapping will proceed as normal. If not allowed, the mapping will not take place.
+- **@BeanLogicSecured annotation**; consults the stated class for the allowance check. The LogicSecuredCheck class will be instantiated by the starter. Its isAllowed() method will be called with the source and the target by BeanMapper. The types can be finetuned by setting the generics. Extending the class from AbstractSpringSecuredCheck gives access to the Principal and the ```hasRole()``` method. If allowed, the mapping will proceed as normal. If not allowed, the mapping will not take place.
+
 ### Added
-- Issue [#8](https://github.com/42BV/beanmapper-spring-boot-starter/issues/8), **Make sure BeanMapper bootstraps SecuredPropertyHandler**; when applySecuredProperties is set to true (in the YML), register SpringSecuredPropertyHandler, so that BeanMapper can properly deal with properties annotated with @BeanSecuredProperty.
-- Issue [#29](https://github.com/42BV/beanmapper-spring/issues/29); **Spring Security based implementation for @SecuredPropertyHandler** Added a Spring Security implementation for the @SecuredPropertyHandler. It will compare the Principal's authorities against the required authorities. At least one match will suffice to grant access.
-- Issue [#105](https://github.com/42BV/beanmapper/issues/105), **Ability to deal with @BeanSecuredProperty by delegating to a SecuredPropertyHandler**; when a field is tagged as @BeanSecuredProperty, BeanMapper will query its attached SecuredPropertyHandler. The handler will most likely be associated with a security implementation, such as Spring Security (not handled here). If no handler is present, access is granted by default.
+- Issue [#8](https://github.com/42BV/beanmapper-spring-boot-starter/issues/8), **Make sure BeanMapper bootstraps RoleSecuredCheck**; when applySecuredProperties is set to true (in the YML), register SpringRoleSecuredCheck, so that BeanMapper can properly deal with properties annotated with @BeanSecuredProperty.
+- Issue [#29](https://github.com/42BV/beanmapper-spring/issues/29); **Spring Security based implementation for @RoleSecuredCheck** Added a Spring Security implementation for the @RoleSecuredCheck. It will compare the Principal's authorities against the required authorities. At least one match will suffice to grant access.
+- Issue [#105](https://github.com/42BV/beanmapper/issues/105), **Ability to deal with @BeanSecuredProperty by delegating to a RoleSecuredCheck**; when a field is tagged as @BeanSecuredProperty, BeanMapper will query its attached RoleSecuredCheck. The handler will most likely be associated with a security implementation, such as Spring Security (not handled here). If no handler is present, access is granted by default.
+- Issue [#106](https://github.com/42BV/beanmapper/issues/106), **When a @BeanSecuredProperty is found without a RoleSecuredCheck being set, throw an exception**; the absence of a RoleSecuredCheck is by default a reason to throw an exception when @BeanSecuredProperty is used anywhere within the application. 
+- Issue [#107](https://github.com/42BV/beanmapper/issues/107), **Test for access by running against LogicSecuredCheck instance**; ability to add LogicSecuredCheck classes to BeanMapper's configuration. These classes can be called upon using the @BeanLogicSecured annotation. It allows for more complex interaction with the enveloping security system, such as not only checking against roles, but also comparing fields in the source or target against information known about the Principal.
 
 ## [2.3.1] - 2017-11-02
 ### Fixed

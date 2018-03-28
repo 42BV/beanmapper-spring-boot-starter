@@ -10,12 +10,13 @@ import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
 import io.beanmapper.BeanMapper;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.spring.converter.IdToEntityBeanConverter;
 import io.beanmapper.spring.flusher.JpaAfterClearFlusher;
-import io.beanmapper.spring.security.SpringSecuredPropertyHandler;
+import io.beanmapper.spring.security.SpringRoleSecuredCheck;
 import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
@@ -33,8 +34,10 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -59,6 +62,10 @@ public class BeanMapperAutoConfig {
     private BeanMapperBuilderCustomizer builderCustomizer;
     @Autowired(required = false)
     private EntityManager entityManager;
+
+    @Lazy
+    @Autowired(required = false)
+    private AuthenticationManager authenticationManager;
 
     private ApplicationScanner collectionHandlerAppScanner;
     private ApplicationScanner beanConverterAppScanner;
@@ -90,17 +97,18 @@ public class BeanMapperAutoConfig {
         addCustomConverters(builder, packagePrefix);
         addCustomBeanPairs(builder);
         addAfterClearFlusher(builder);
-        setSecuredPropertyHandler(builder);
+        setSecuredChecks(builder, packagePrefix);
         setUnproxy(builder);
         customize(builder);
         return builder.build();
     }
 
-    private void setSecuredPropertyHandler(BeanMapperBuilder builder) {
-        if (!props.getApplySecuredProperties()) {
+    private void setSecuredChecks(BeanMapperBuilder builder, String packagePrefix) {
+        if (authenticationManager == null || !props.getApplySecuredProperties()) {
             return;
         }
-        builder.setSecuredPropertyHandler(new SpringSecuredPropertyHandler());
+        addLogicSecuredChecks(builder, packagePrefix);
+        builder.setSecuredPropertyHandler(new SpringRoleSecuredCheck());
     }
 
     private void addAfterClearFlusher(BeanMapperBuilder builder) {
@@ -131,6 +139,15 @@ public class BeanMapperAutoConfig {
                 builder.addBeanPairWithStrictSource(cls, beanMapToClass.target());
             } else if (beanMapFromClass != null) {
                 builder.addBeanPairWithStrictTarget(beanMapFromClass.source(), cls);
+            }
+        });
+    }
+
+    private void addLogicSecuredChecks(BeanMapperBuilder builder, String basePackage) {
+        collectionHandlerAppScanner.findLogicSecuredCheckClasses(basePackage).forEach(cls -> {
+            LogicSecuredCheck logicSecuredCheck = instantiateClassAppContextOptional(cls, "logic secured check");
+            if (logicSecuredCheck != null) {
+                builder.addLogicSecuredCheck(logicSecuredCheck);
             }
         });
     }

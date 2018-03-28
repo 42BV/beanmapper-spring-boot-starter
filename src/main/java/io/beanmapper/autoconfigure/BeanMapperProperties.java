@@ -23,7 +23,7 @@ public class BeanMapperProperties {
 
     private Boolean applyStrictMappingConvention = true;
 
-    private Boolean applySecuredProperties = false;
+    private Boolean applySecuredProperties = true;
 
     private String strictSourceSuffix = "Form";
 
