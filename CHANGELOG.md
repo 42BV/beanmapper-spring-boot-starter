@@ -6,6 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [2.4.0] - 2018-03-28
 This release effectively adds the following functionality:
 - **@BeanRoleSecured annotation**; checks the Principal for any one of the stated roles. If allowed, the mapping will proceed as normal. If not allowed, the mapping will not take place.
 - **@BeanLogicSecured annotation**; consults the stated class for the allowance check. The LogicSecuredCheck class will be instantiated by the starter. Its isAllowed() method will be called with the source and the target by BeanMapper. The types can be finetuned by setting the generics. Extending the class from AbstractSpringSecuredCheck gives access to the Principal and the ```hasRole()``` method. If allowed, the mapping will proceed as normal. If not allowed, the mapping will not take place.
