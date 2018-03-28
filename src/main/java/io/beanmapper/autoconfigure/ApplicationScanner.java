@@ -10,6 +10,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Set;
 
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.utils.Classes;
@@ -74,11 +75,16 @@ class ApplicationScanner {
         return findClasses(basePackage, CollectionHandler.class);
     }
 
+    Set<Class<? extends LogicSecuredCheck>> findLogicSecuredCheckClasses(String basePackage) {
+        return findClasses(basePackage, LogicSecuredCheck.class);
+    }
+
     private <T> Set<Class<? extends T>> findClasses(String basePackage, Class<T> lookForClass) {
         Set<Class<? extends T>> converterClasses = new HashSet<>();
         classpathScanner.addIncludeFilter(createTypeFilterForClass(lookForClass));
         classpathScanner.findCandidateComponents(basePackage).forEach(
                 bd -> converterClasses.add((Class<T>) forName(bd.getBeanClassName())));
+        classpathScanner.resetFilters(false);
         return converterClasses;
     }
 

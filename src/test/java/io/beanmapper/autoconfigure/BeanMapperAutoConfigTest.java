@@ -8,8 +8,6 @@ import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.BeanFieldMatch;

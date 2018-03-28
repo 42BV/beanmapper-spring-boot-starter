@@ -23,6 +23,8 @@ public class BeanMapperProperties {
 
     private Boolean applyStrictMappingConvention = true;
 
+    private Boolean applySecuredProperties = true;
+
     private String strictSourceSuffix = "Form";
 
     private String strictTargetSuffix = "Result";
@@ -43,12 +45,20 @@ public class BeanMapperProperties {
         this.packagePrefix = basePackageName;
     }
 
-    public Boolean isApplyStrictMappingConvention() {
+    public Boolean getApplyStrictMappingConvention() {
         return applyStrictMappingConvention;
     }
 
     public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
         this.applyStrictMappingConvention = applyStrictMappingConvention;
+    }
+
+    public Boolean getApplySecuredProperties() {
+        return applySecuredProperties;
+    }
+
+    public void setApplySecuredProperties(Boolean applySecuredProperties) {
+        this.applySecuredProperties = applySecuredProperties;
     }
 
     public String getStrictSourceSuffix() {
