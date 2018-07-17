@@ -218,6 +218,8 @@ public class BeanMapperAutoConfig {
         private BeanMapper beanMapper;
         @Autowired
         private ApplicationContext applicationContext;
+        @Autowired(required = false)
+        private EntityManager entityManager;
 
         /**
          * If a {@link MappingJackson2HttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
@@ -229,7 +231,8 @@ public class BeanMapperAutoConfig {
                 argumentResolvers.add(new MergedFormMethodArgumentResolver(
                         singletonList(new StructuredJsonMessageConverter(mappingJackson2HttpMessageConverter)),
                         beanMapper,
-                        applicationContext));
+                        applicationContext,
+                        entityManager));
             } else {
                 log.warn("No MergedFormArgumentResolver added to MVC application because no MappingJackson2HttpMessageConverter bean found!");
             }

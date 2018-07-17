@@ -10,7 +10,7 @@ import java.util.List;
 
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
-import io.beanmapper.core.BeanFieldMatch;
+import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
@@ -105,7 +105,7 @@ public class BeanMapperAutoConfigTest {
                 builder.addConverter(new BeanConverter() {
 
                     @Override
-                    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanFieldMatch beanFieldMatch) {
+                    public Object convert(BeanMapper beanMapper, Object source, Class<?> targetClass, BeanPropertyMatch beanFieldMatch) {
                         return null;
                     }
 

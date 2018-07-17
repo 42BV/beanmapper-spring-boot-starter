@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [3.0.0] - 2018-07-17
+Full upgrade to **Spring 5 / Spring Boot 2**. This version of BeanMapper Spring is no longer usable with lower versions.
+### Fixed
+- **BREAKING CHANGE**: BeanConverter implementations no longer work with BeanField, but with BeanProperty. The name BeanField is no longer correct. A BeanProperty is the combination of BeanField and BeanMethod accessors (get/set).
+- Issue [#32](https://github.com/42BV/beanmapper-spring/issues/32); **MergePair.beforeMerge must be untouched, not BeanMapped** when a MergePair is used, the ```beforeMerge``` is now retrieved and immediately detached before the target is fetched. Take note that this means that the original's proxies can no longer be resolved. This restriction does not apply to the target.
+- Issue [#114](https://github.com/42BV/beanmapper/issues/114), **Bean property Class types are determined depending on the accessor that will be used**; previously the Class was determined on the basis of the bean field. Now, it will look at the way a property will be accessed (getter/setter/field) and use the proper Class, including generics (ie, Type). 
+
 ## [2.4.1] - 2018-06-20
 ### Fixed
 - Issue [#109](https://github.com/42BV/beanmapper/issues/109), **Specify the return type for AbstractBeanConverter.doConvert**; on extending AbstractBeanConverter, it is beneficial for the developer to immediately see the expected return type for the ```doConvert``` method.
