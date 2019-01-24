@@ -2,7 +2,9 @@ package io.beanmapper.autoconfigure;
 
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.springframework.boot.test.util.EnvironmentTestUtils.addEnvironment;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 
@@ -15,6 +17,7 @@ import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
+import io.beanmapper.spring.security.SpringRoleSecuredCheck;
 import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 
@@ -26,6 +29,7 @@ import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguratio
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -84,6 +88,36 @@ public class BeanMapperAutoConfigTest {
         assertEquals(2, customCollectionHandlers.size());
         TestCollectionHandlerWithAppCtx collectionHandler = (TestCollectionHandlerWithAppCtx)mapper.getConfiguration().getCollectionHandlerFor(TestEntity2.class);
         assertNotNull(collectionHandler.getApplicationContext());
+    }
+
+    @Test
+    public void autoconfig_shouldSetSecurityChecks() {
+        loadApplicationContext(ConfigWithSecurity.class);
+        BeanMapper mapper = context.getBean(BeanMapper.class);
+
+        assertTrue(mapper.getConfiguration().getRoleSecuredCheck() instanceof SpringRoleSecuredCheck);
+    }
+
+
+
+    @Test
+    public void autoconfig_shouldNotSetSecurityChecks_ifSpringSecurityIsMissingFromClassPath() {
+        loadApplicationContext(ConfigWithSecurity.class, new NoSpringSecurityClassLoader());
+        BeanMapper mapper = context.getBean(BeanMapper.class);
+
+        assertFalse(mapper.getConfiguration().getRoleSecuredCheck() instanceof SpringRoleSecuredCheck);
+    }
+
+
+    @Configuration
+    static class ConfigWithSecurity {
+
+        @Bean
+        public AuthenticationManager authenticationManager() {
+            return authentication -> {
+                throw new UnsupportedOperationException("Stub!");
+            };
+        }
     }
 
     @Configuration
@@ -154,7 +188,16 @@ public class BeanMapperAutoConfigTest {
     }
 
     private void loadApplicationContext(Class<?> config, String... env) {
+        loadApplicationContext(config, null, env);
+    }
+
+    private void loadApplicationContext(Class<?> config, ClassLoader classLoader, String... env) {
         AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+
+        if (classLoader != null) {
+            applicationContext.setClassLoader(classLoader);
+        }
+
         addEnvironment(applicationContext, env);
         addEnvironment(applicationContext, BEANMAPPER_PACKAGE_PREFIX_PROP);
         if (config != null) {
