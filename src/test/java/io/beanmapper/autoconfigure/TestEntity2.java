@@ -1,4 +1,4 @@
 package io.beanmapper.autoconfigure;
 
-public class TestEntity2 {
+class TestEntity2 {
 }
