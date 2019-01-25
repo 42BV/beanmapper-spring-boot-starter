@@ -10,6 +10,8 @@ import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 import java.util.List;
 
+import javax.persistence.EntityManager;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.BeanPropertyMatch;
@@ -17,6 +19,7 @@ import io.beanmapper.core.collections.CollectionHandler;
 import io.beanmapper.core.converter.BeanConverter;
 import io.beanmapper.core.unproxy.BeanUnproxy;
 import io.beanmapper.core.unproxy.DefaultBeanUnproxy;
+import io.beanmapper.spring.converter.IdToEntityBeanConverter;
 import io.beanmapper.spring.security.SpringRoleSecuredCheck;
 import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
@@ -108,6 +111,37 @@ public class BeanMapperAutoConfigTest {
         assertFalse(mapper.getConfiguration().getRoleSecuredCheck() instanceof SpringRoleSecuredCheck);
     }
 
+    @Test
+    public void autoconfig_shouldLoadIdToEntityBeanConverterAndHibernateUnproxy_withSpringDataOnClassPath() {
+        loadApplicationContext(ConfigWithSpringData.class);
+        BeanMapper mapper = context.getBean(BeanMapper.class);
+        List<BeanConverter> beanConverters = mapper.getConfiguration().getBeanConverters();
+        assertTrue(beanConverters.stream().anyMatch(c -> c instanceof IdToEntityBeanConverter));
+
+        BeanUnproxy unproxyDelegate = (BeanUnproxy) getField(mapper.getConfiguration().getBeanUnproxy(), "delegate");
+        assertTrue(unproxyDelegate instanceof HibernateAwareBeanUnproxy);
+    }
+
+    @Test
+    public void autoconfig_shouldNotLoadIdToEntityBeanConverterAndHibernateUnproxy_withoutSpringDataOnClassPath() {
+        loadApplicationContext(ConfigWithSpringData.class, new NoSpringDataClassLoader());
+        BeanMapper mapper = context.getBean(BeanMapper.class);
+        List<BeanConverter> beanConverters = mapper.getConfiguration().getBeanConverters();
+        assertFalse(beanConverters.stream().anyMatch(c -> c instanceof IdToEntityBeanConverter));
+
+        BeanUnproxy unproxyDelegate = (BeanUnproxy) getField(mapper.getConfiguration().getBeanUnproxy(), "delegate");
+        assertFalse(unproxyDelegate instanceof HibernateAwareBeanUnproxy);
+        assertTrue(unproxyDelegate instanceof DefaultBeanUnproxy);
+    }
+
+    @Configuration
+    static class ConfigWithSpringData {
+
+        @Bean
+        public EntityManager entityManager() {
+            return new NoOpEntityManager();
+        }
+    }
 
     @Configuration
     static class ConfigWithSecurity {

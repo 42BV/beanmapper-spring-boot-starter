@@ -35,7 +35,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -60,8 +59,6 @@ public class BeanMapperAutoConfig {
     private ApplicationContext applicationContext;
     @Autowired(required = false)
     private BeanMapperBuilderCustomizer builderCustomizer;
-    @Autowired(required = false)
-    private EntityManager entityManager;
 
     private ApplicationScanner collectionHandlerAppScanner;
     private ApplicationScanner beanConverterAppScanner;
@@ -80,21 +77,31 @@ public class BeanMapperAutoConfig {
      */
     @Bean
     @ConditionalOnMissingBean(BeanMapper.class)
-    @ConditionalOnClass({ EntityInformation.class })
     public BeanMapper beanMapper() {
         String packagePrefix = determinePackagePrefix();
         BeanMapperBuilder builder = new BeanMapperBuilder()
                 .setApplyStrictMappingConvention(props.getApplyStrictMappingConvention())
                 .setStrictSourceSuffix(props.getStrictSourceSuffix())
                 .setStrictTargetSuffix(props.getStrictTargetSuffix())
-                .addPackagePrefix(packagePrefix)
-                .addConverter(new IdToEntityBeanConverter(applicationContext));
+                .addPackagePrefix(packagePrefix);
+
+        if (isSpringDataJpaOnClasspath()) {
+                builder.addConverter(new IdToEntityBeanConverter(applicationContext));
+        } else {
+            log.info("Spring Data JPA is not present on the classpath. BeanMapper's IdToEntityBeanConverter will not be activated");
+        }
+
         addCollectionHandlers(builder, packagePrefix);
         addCustomConverters(builder, packagePrefix);
         addCustomBeanPairs(builder);
-        addAfterClearFlusher(builder);
 
-        if (ClassUtils.isPresent("org.springframework.security.authentication.AuthenticationManager", applicationContext.getClassLoader())) {
+        if (isSpringDataJpaOnClasspath()) {
+            addAfterClearFlusher(builder);
+        } else {
+            log.info("Spring Data JPA is not present on the classpath. BeanMapper's afterClearFlusher will not be activated");
+        }
+
+        if (isSpringSecurityOnClasspath()) {
             setSecuredChecks(builder, packagePrefix);
         } else {
             log.info("Spring Security is not present on the classpath. BeanMapper's @BeanLogicSecured and @BeanRoleSecured annotations will not be processed.");
@@ -121,9 +128,15 @@ public class BeanMapperAutoConfig {
     }
 
     private void addAfterClearFlusher(BeanMapperBuilder builder) {
-        if (entityManager == null) {
+        javax.persistence.EntityManager entityManager;
+
+        try {
+            entityManager = applicationContext.getBean(javax.persistence.EntityManager.class);
+        } catch (NoSuchBeanDefinitionException e) {
+            log.warn("No EntityManager bean has been configured within your application. BeanMapper's afterClearFlusher can not be activated.");
             return;
         }
+
         builder.addAfterClearFlusher(new JpaAfterClearFlusher(entityManager));
     }
 
@@ -201,8 +214,13 @@ public class BeanMapperAutoConfig {
 
     private void setUnproxy(BeanMapperBuilder builder) {
         if (props.isUseHibernateUnproxy()) {
-            builder.setBeanUnproxy(new HibernateAwareBeanUnproxy());
-            log.info("Set HibernateAwareUnproxy as bean unproxy mechanism.");
+            if (isHibernateOnClasspath()) {
+                builder.setBeanUnproxy(new HibernateAwareBeanUnproxy());
+                log.info("Set HibernateAwareUnproxy as bean unproxy mechanism.");
+            } else {
+                log.warn("use-hibernate-unproxy was set to true, but no Hibernate / Spring Data JPA was found on your classpath. Did you perhaps forget to include spring-boot-start-data-jpa in your project?");
+            }
+
         } else {
             log.info("use-hibernate-unproxy set to false, keeping default unproxy mechanism.");
         }
@@ -217,7 +235,7 @@ public class BeanMapperAutoConfig {
 
     @Configuration
     @ConditionalOnWebApplication
-    @ConditionalOnClass({ EntityInformation.class })
+    @ConditionalOnClass({ org.springframework.data.repository.core.EntityInformation.class })
     static class MergedFormConfig extends WebMvcConfigurerAdapter {
 
         private final Logger log = LoggerFactory.getLogger(MergedFormConfig.class);
@@ -246,5 +264,17 @@ public class BeanMapperAutoConfig {
                 log.warn("No MergedFormArgumentResolver added to MVC application because no MappingJackson2HttpMessageConverter bean found!");
             }
         }
+    }
+
+    private boolean isSpringDataJpaOnClasspath() {
+        return ClassUtils.isPresent("javax.persistence.EntityManager", applicationContext.getClassLoader());
+    }
+
+    private boolean isHibernateOnClasspath() {
+        return ClassUtils.isPresent("org.hibernate.proxy.HibernateProxy", applicationContext.getClassLoader());
+    }
+
+    private boolean isSpringSecurityOnClasspath() {
+        return ClassUtils.isPresent("org.springframework.security.authentication.AuthenticationManager", applicationContext.getClassLoader());
     }
 }
