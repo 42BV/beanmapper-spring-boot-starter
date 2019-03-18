@@ -24,6 +24,7 @@ import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -34,10 +35,9 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
@@ -62,10 +62,6 @@ public class BeanMapperAutoConfig {
     private BeanMapperBuilderCustomizer builderCustomizer;
     @Autowired(required = false)
     private EntityManager entityManager;
-
-    @Lazy
-    @Autowired(required = false)
-    private AuthenticationManager authenticationManager;
 
     private ApplicationScanner collectionHandlerAppScanner;
     private ApplicationScanner beanConverterAppScanner;
@@ -97,14 +93,27 @@ public class BeanMapperAutoConfig {
         addCustomConverters(builder, packagePrefix);
         addCustomBeanPairs(builder);
         addAfterClearFlusher(builder);
-        setSecuredChecks(builder, packagePrefix);
+
+        if (ClassUtils.isPresent("org.springframework.security.authentication.AuthenticationManager", applicationContext.getClassLoader())) {
+            setSecuredChecks(builder, packagePrefix);
+        } else {
+            log.info("Spring Security is not present on the classpath. BeanMapper's @BeanLogicSecured and @BeanRoleSecured annotations will not be processed.");
+        }
+
         setUnproxy(builder);
         customize(builder);
         return builder.build();
     }
 
     private void setSecuredChecks(BeanMapperBuilder builder, String packagePrefix) {
-        if (authenticationManager == null || !props.getApplySecuredProperties()) {
+        try {
+            applicationContext.getBean(org.springframework.security.authentication.AuthenticationManager.class);
+        } catch (NoSuchBeanDefinitionException e) {
+            log.warn("No AuthenticationManager bean has been configured within your application. BeanMapper's @BeanLogicSecured and @BeanRoleSecured annotations can not be processed.");
+            return;
+        }
+        
+        if (!props.getApplySecuredProperties()) {
             return;
         }
         addLogicSecuredChecks(builder, packagePrefix);
