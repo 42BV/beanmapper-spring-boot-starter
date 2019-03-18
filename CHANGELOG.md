@@ -5,6 +5,10 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [3.1.0] - 2019-03-18
+### Fixed
+- Issue [#10](https://github.com/42BV/beanmapper-spring-boot-starter/issues/10), **Context Startup fails if Spring Security is not on the classpath**; when beanmapper-spring-boot-starter was present and spring security was not. This has now been resolved, but some components of BeanMapper(Spring) will be unavailable
+- Issue [#1](https://github.com/42BV/beanmapper-spring-boot-starter/issues/1), **Context Startup fails if Spring Data / JPA is not on the classpath**; when beanmapper-spring-boot-starter was present and spring-boot-starter-data-jpa was not. This has now been resolved, but some components of BeanMapper(spring) will be unavailable.
 
 ## [3.0.1] - 2018-07-19
 ### Fixed
