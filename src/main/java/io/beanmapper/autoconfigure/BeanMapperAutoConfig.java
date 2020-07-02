@@ -35,9 +35,11 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
@@ -113,13 +115,6 @@ public class BeanMapperAutoConfig {
     }
 
     private void setSecuredChecks(BeanMapperBuilder builder, String packagePrefix) {
-        try {
-            applicationContext.getBean(org.springframework.security.authentication.AuthenticationManager.class);
-        } catch (NoSuchBeanDefinitionException e) {
-            log.warn("No AuthenticationManager bean has been configured within your application. BeanMapper's @BeanLogicSecured and @BeanRoleSecured annotations can not be processed.");
-            return;
-        }
-        
         if (!props.getApplySecuredProperties()) {
             return;
         }
@@ -196,7 +191,7 @@ public class BeanMapperAutoConfig {
 
         log.info("Found {} candidate class [{}], now trying to instantiate...", label, cls);
         try {
-            T created = instantiate(cls);
+            T created = instantiateClass(cls);
             log.info("Added [{}] [{}] to bean mapper.", label, cls);
             return created;
         } catch (BeanInstantiationException e) {
@@ -236,7 +231,7 @@ public class BeanMapperAutoConfig {
     @Configuration
     @ConditionalOnWebApplication
     @ConditionalOnClass({ org.springframework.data.repository.core.EntityInformation.class })
-    static class MergedFormConfig extends WebMvcConfigurerAdapter {
+    static class MergedFormConfig implements WebMvcConfigurer {
 
         private final Logger log = LoggerFactory.getLogger(MergedFormConfig.class);
         @Autowired(required = false)
