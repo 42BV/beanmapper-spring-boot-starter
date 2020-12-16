@@ -65,9 +65,9 @@
         <maven.scm.provider.gitexe.version>1.9.2</maven.scm.provider.gitexe.version>
         <maven.site.plugin.version>3.3</maven.site.plugin.version>
 
-        <spring.boot.version>2.0.3.RELEASE</spring.boot.version>
-        <beanmapper.version>3.0.1</beanmapper.version>
-        <beanmapper.spring.version>3.0.0</beanmapper.spring.version>
+        <spring.boot.version>2.4.1</spring.boot.version>
+        <beanmapper.version>3.1.0</beanmapper.version>
+        <beanmapper.spring.version>3.1.0</beanmapper.spring.version>
     </properties>
     
     <dependencies>
@@ -111,6 +111,17 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hamcrest</groupId>
+                    <artifactId>hamcrest-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
     
@@ -196,7 +207,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.9</version>
+                <version>0.8.6</version>
                 <executions>
                     <execution>
                         <goals>
@@ -211,6 +222,19 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.owasp</groupId>
+                <artifactId>dependency-check-maven</artifactId>
+                <version>6.0.3</version>
+                <configuration>
+                    <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
+                    <skipProvidedScope>true</skipProvidedScope>
+                    <skipTestScope>true</skipTestScope>
+                    <skipRuntimeScope>true</skipRuntimeScope>
+                    <assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+                    <suppressionFile>owasp-suppressions.xml</suppressionFile>
+                </configuration>
             </plugin>
         </plugins>
     </build>

@@ -5,7 +5,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.boot.test.util.EnvironmentTestUtils.addEnvironment;
 import static org.springframework.test.util.ReflectionTestUtils.getField;
 
 import java.util.List;
@@ -29,6 +28,7 @@ import org.junit.Test;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
@@ -232,8 +232,8 @@ public class BeanMapperAutoConfigTest {
             applicationContext.setClassLoader(classLoader);
         }
 
-        addEnvironment(applicationContext, env);
-        addEnvironment(applicationContext, BEANMAPPER_PACKAGE_PREFIX_PROP);
+        TestPropertyValues.of(env).applyTo(applicationContext);
+        TestPropertyValues.of(BEANMAPPER_PACKAGE_PREFIX_PROP).applyTo(applicationContext);
         if (config != null) {
             applicationContext.register(config);
         }

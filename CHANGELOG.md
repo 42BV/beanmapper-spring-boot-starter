@@ -5,6 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [3.2.0] - 2020-12-16
+### Upgrades
+- Upgraded beanmapper, beanmapper-spring and spring-boot dependencies
+- Removed travis build in favour of github actions 
+
 ## [3.1.0] - 2019-03-18
 ### Fixed
 - Issue [#10](https://github.com/42BV/beanmapper-spring-boot-starter/issues/10), **Context Startup fails if Spring Security is not on the classpath**; when beanmapper-spring-boot-starter was present and spring security was not. This has now been resolved, but some components of BeanMapper(Spring) will be unavailable
