@@ -58,16 +58,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <maven.cobertura.version>2.5.2</maven.cobertura.version>
-        <maven.javadoc.version>2.8</maven.javadoc.version>
-        <maven.project.version>2.4</maven.project.version>
-        <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
-        <maven.scm.provider.gitexe.version>1.9.2</maven.scm.provider.gitexe.version>
-        <maven.site.plugin.version>3.3</maven.site.plugin.version>
 
         <spring.boot.version>2.4.1</spring.boot.version>
         <beanmapper.version>3.1.0</beanmapper.version>
         <beanmapper.spring.version>3.1.0</beanmapper.spring.version>
+
+        <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
+        <maven.scm.provider.gitexe.version>1.9.2</maven.scm.provider.gitexe.version>
     </properties>
     
     <dependencies>

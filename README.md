@@ -1,5 +1,5 @@
 [![Build Status](https://github.com/42BV/beanmapper-spring-boot-starter/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/42BV/beanmapper-spring-boot-starter/actions?query=workflow%3A%22Java+CI+with+Maven%22)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/1cd19a18411b4fab97a49af920d72af4)](https://www.codacy.com/app/42bv/beanmapper-spring-boot-starter)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/5af36404b8634c1ab108257cd8ad85c2)](https://www.codacy.com/gh/42BV/beanmapper-spring-boot-starter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=42BV/beanmapper-spring-boot-starter&amp;utm_campaign=Badge_Grade)
 [![BCH compliance](https://bettercodehub.com/edge/badge/42BV/beanmapper-spring-boot-starter?branch=master)](https://bettercodehub.com/)
 [![codecov](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter/branch/master/graph/badge.svg)](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring-boot-starter)
