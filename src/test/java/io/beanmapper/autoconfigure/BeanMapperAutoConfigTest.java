@@ -82,14 +82,14 @@ public class BeanMapperAutoConfigTest {
     public void autoconfig_shouldRegisterCollectionHandler_ifScanned() {
         loadApplicationContext(BEANMAPPER_USE_HIBERNATE_UNPROXY_PROP);
         BeanMapper mapper = context.getBean(BeanMapper.class);
-        List<CollectionHandler> customCollectionHandlers = mapper.getConfiguration().getCollectionHandlers()
+        List<CollectionHandler> customCollectionHandlers = mapper.configuration().getCollectionHandlers()
                 .stream()
                 .filter(handler ->
                     handler.getType().equals(TestEntity.class) ||
                     handler.getType().equals(TestEntity2.class))
                 .collect(toList());
         assertEquals(2, customCollectionHandlers.size());
-        TestCollectionHandlerWithAppCtx collectionHandler = (TestCollectionHandlerWithAppCtx)mapper.getConfiguration().getCollectionHandlerFor(TestEntity2.class);
+        TestCollectionHandlerWithAppCtx collectionHandler = (TestCollectionHandlerWithAppCtx)mapper.configuration().getCollectionHandlerFor(TestEntity2.class);
         assertNotNull(collectionHandler.getApplicationContext());
     }
 
@@ -98,7 +98,7 @@ public class BeanMapperAutoConfigTest {
         loadApplicationContext(ConfigWithSecurity.class);
         BeanMapper mapper = context.getBean(BeanMapper.class);
 
-        assertTrue(mapper.getConfiguration().getRoleSecuredCheck() instanceof SpringRoleSecuredCheck);
+        assertTrue(mapper.configuration().getRoleSecuredCheck() instanceof SpringRoleSecuredCheck);
     }
 
 
@@ -108,17 +108,17 @@ public class BeanMapperAutoConfigTest {
         loadApplicationContext(ConfigWithSecurity.class, new NoSpringSecurityClassLoader());
         BeanMapper mapper = context.getBean(BeanMapper.class);
 
-        assertFalse(mapper.getConfiguration().getRoleSecuredCheck() instanceof SpringRoleSecuredCheck);
+        assertFalse(mapper.configuration().getRoleSecuredCheck() instanceof SpringRoleSecuredCheck);
     }
 
     @Test
     public void autoconfig_shouldLoadIdToEntityBeanConverterAndHibernateUnproxy_withSpringDataOnClassPath() {
         loadApplicationContext(ConfigWithSpringData.class);
         BeanMapper mapper = context.getBean(BeanMapper.class);
-        List<BeanConverter> beanConverters = mapper.getConfiguration().getBeanConverters();
+        List<BeanConverter> beanConverters = mapper.configuration().getBeanConverters();
         assertTrue(beanConverters.stream().anyMatch(c -> c instanceof IdToEntityBeanConverter));
 
-        BeanUnproxy unproxyDelegate = (BeanUnproxy) getField(mapper.getConfiguration().getBeanUnproxy(), "delegate");
+        BeanUnproxy unproxyDelegate = (BeanUnproxy) getField(mapper.configuration().getBeanUnproxy(), "delegate");
         assertTrue(unproxyDelegate instanceof HibernateAwareBeanUnproxy);
     }
 
@@ -126,10 +126,10 @@ public class BeanMapperAutoConfigTest {
     public void autoconfig_shouldNotLoadIdToEntityBeanConverterAndHibernateUnproxy_withoutSpringDataOnClassPath() {
         loadApplicationContext(ConfigWithSpringData.class, new NoSpringDataClassLoader());
         BeanMapper mapper = context.getBean(BeanMapper.class);
-        List<BeanConverter> beanConverters = mapper.getConfiguration().getBeanConverters();
+        List<BeanConverter> beanConverters = mapper.configuration().getBeanConverters();
         assertFalse(beanConverters.stream().anyMatch(c -> c instanceof IdToEntityBeanConverter));
 
-        BeanUnproxy unproxyDelegate = (BeanUnproxy) getField(mapper.getConfiguration().getBeanUnproxy(), "delegate");
+        BeanUnproxy unproxyDelegate = (BeanUnproxy) getField(mapper.configuration().getBeanUnproxy(), "delegate");
         assertFalse(unproxyDelegate instanceof HibernateAwareBeanUnproxy);
         assertTrue(unproxyDelegate instanceof DefaultBeanUnproxy);
     }
@@ -194,7 +194,7 @@ public class BeanMapperAutoConfigTest {
 
     private void assertBeanMapper(int expectedNumberOfPackagePrefixes, int expectedNumberOfConverters, boolean hibernateUnproxy) {
         BeanMapper mapper = context.getBean(BeanMapper.class);
-        io.beanmapper.config.Configuration config = mapper.getConfiguration();
+        io.beanmapper.config.Configuration config = mapper.configuration();
         assertEquals(expectedNumberOfPackagePrefixes, config.getPackagePrefixes().size());
         if (expectedNumberOfPackagePrefixes == 1) {
             assertEquals("io.beanmapper.autoconfigure", config.getPackagePrefixes().get(0));
