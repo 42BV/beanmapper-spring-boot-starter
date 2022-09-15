@@ -4,7 +4,7 @@
     
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
-    <version>3.2.1-SNAPSHOT</version>
+    <version>4.0.0</version>
     <packaging>jar</packaging>
     <name>42 BeanMapper Spring Boot Starter</name>
     <description>Spring boot starter/autoconfig for BeanMapper</description>
@@ -28,7 +28,7 @@
         <url>https://github.com/42BV/beanmapper-spring-boot-starter</url>
         <connection>scm:git:https://github.com/42BV/beanmapper-spring-boot-starter.git</connection>
         <developerConnection>scm:git:https://github.com/42BV/beanmapper-spring-boot-starter.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>v4.0.0</tag>
     </scm>
     
     <developers>
