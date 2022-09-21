@@ -60,8 +60,8 @@
         <maven.compiler.target>17</maven.compiler.target>
 
         <spring.boot.version>2.7.3</spring.boot.version>
-        <beanmapper.version>4.0.0</beanmapper.version>
-        <beanmapper.spring.version>4.0.0</beanmapper.spring.version>
+        <beanmapper.version>4.0.1</beanmapper.version>
+        <beanmapper.spring.version>4.0.1</beanmapper.spring.version>
 
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.scm.provider.gitexe.version>1.13.0</maven.scm.provider.gitexe.version>

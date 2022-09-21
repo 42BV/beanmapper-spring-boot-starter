@@ -53,28 +53,28 @@ public class BeanMapperAutoConfigTest {
     @Test
     public void autoconfig_shouldCreateBeanMapper_ifNotExists() {
         loadApplicationContext();
-        assertBeanMapper(1, 16);
+        assertBeanMapper(1, 17);
         assertMergedFormArgResolver();
     }
 
     @Test
     public void autoconfig_shouldCreateCustomizedBeanMapper_ifNotExists() {
         loadApplicationContext(ConfigWithBeanMapperBuilderCustomizer.class);
-        assertBeanMapper(1, 17);
+        assertBeanMapper(1, 18);
         assertMergedFormArgResolver();
     }
 
     @Test
     public void autoconfig_shouldNotCreateBeanMapper_ifAlreadyExists() {
         loadApplicationContext(ConfigWithBeanMapper.class);
-        assertBeanMapper(0, 11, false);
+        assertBeanMapper(0, 12, false);
         assertMergedFormArgResolver();
     }
 
     @Test
     public void autoconfig_shouldCreateBeanMapper_withDefaultUnproxy_whenEnvIsSet() {
         loadApplicationContext(BEANMAPPER_USE_HIBERNATE_UNPROXY_PROP);
-        assertBeanMapper(1, 16, false);
+        assertBeanMapper(1, 17, false);
         assertMergedFormArgResolver();
     }
 
