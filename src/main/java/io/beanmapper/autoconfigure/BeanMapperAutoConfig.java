@@ -1,11 +1,11 @@
 package io.beanmapper.autoconfigure;
 
 import static java.util.Collections.singletonList;
-import static org.springframework.beans.BeanUtils.instantiate;
 import static org.springframework.beans.BeanUtils.instantiateClass;
 
 import java.util.List;
 
+import javax.annotation.Nonnull;
 import javax.annotation.PostConstruct;
 import javax.persistence.EntityManager;
 
@@ -35,18 +35,16 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 /**
  * In no BeanMapper bean is found, it will be created with sensible webapplication/spring-data-jpa mapping defaults.
- * It's possible to customize the BeanMapperBuilder by adding a bean of type {@link BeanMapperBuilderCustomizer} 
+ * It's possible to customize the BeanMapperBuilder by adding a bean of type {@link BeanMapperBuilderCustomizer}
  * to your configuration.
- * When a {@link MappingJackson2HttpMessageConverter} bean is found, a {@link MergedFormMethodArgumentResolver} 
+ * When a {@link MappingJackson2HttpMessageConverter} bean is found, a {@link MergedFormMethodArgumentResolver}
  * will be added to the Spring MVC context.
  */
 @Configuration
@@ -55,15 +53,18 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 public class BeanMapperAutoConfig {
 
     private final Logger log = LoggerFactory.getLogger(BeanMapperAutoConfig.class);
-    @Autowired
-    private BeanMapperProperties props;
-    @Autowired
-    private ApplicationContext applicationContext;
-    @Autowired(required = false)
-    private BeanMapperBuilderCustomizer builderCustomizer;
+    private final BeanMapperProperties props;
+    private final ApplicationContext applicationContext;
+    private final BeanMapperBuilderCustomizer builderCustomizer;
 
     private ApplicationScanner collectionHandlerAppScanner;
     private ApplicationScanner beanConverterAppScanner;
+
+    public BeanMapperAutoConfig(final BeanMapperProperties props, final ApplicationContext applicationContext, @Autowired(required = false) final BeanMapperBuilderCustomizer builderCustomizer) {
+        this.props = props;
+        this.applicationContext = applicationContext;
+        this.builderCustomizer = builderCustomizer;
+    }
 
     @PostConstruct
     private void initApplicationScanner() {
@@ -162,7 +163,7 @@ public class BeanMapperAutoConfig {
 
     private void addLogicSecuredChecks(BeanMapperBuilder builder, String basePackage) {
         collectionHandlerAppScanner.findLogicSecuredCheckClasses(basePackage).forEach(cls -> {
-            LogicSecuredCheck logicSecuredCheck = instantiateClassAppContextOptional(cls, "logic secured check");
+            LogicSecuredCheck<?, ?> logicSecuredCheck = instantiateClassAppContextOptional(cls, "logic secured check");
             if (logicSecuredCheck != null) {
                 builder.addLogicSecuredCheck(logicSecuredCheck);
             }
@@ -171,7 +172,7 @@ public class BeanMapperAutoConfig {
 
     private void addCollectionHandlers(BeanMapperBuilder builder, String basePackage) {
         collectionHandlerAppScanner.findCollectionHandlerClasses(basePackage).forEach(cls -> {
-            CollectionHandler collectionHandler = instantiateClassAppContextOptional(cls, "collection handler");
+            CollectionHandler<?> collectionHandler = instantiateClassAppContextOptional(cls, "collection handler");
             if (collectionHandler != null) {
                 builder.addCollectionHandler(collectionHandler);
             }
@@ -234,20 +235,24 @@ public class BeanMapperAutoConfig {
     static class MergedFormConfig implements WebMvcConfigurer {
 
         private final Logger log = LoggerFactory.getLogger(MergedFormConfig.class);
-        @Autowired(required = false)
-        private MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
-        @Autowired
-        private BeanMapper beanMapper;
-        @Autowired
-        private ApplicationContext applicationContext;
-        @Autowired(required = false)
-        private EntityManager entityManager;
+        private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+        private final BeanMapper beanMapper;
+        private final ApplicationContext applicationContext;
+        private final EntityManager entityManager;
+
+        public MergedFormConfig(@Autowired(required = false) final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter,
+                final BeanMapper beanMapper, final ApplicationContext applicationContext, @Autowired(required = false) final EntityManager entityManager) {
+            this.mappingJackson2HttpMessageConverter = mappingJackson2HttpMessageConverter;
+            this.beanMapper = beanMapper;
+            this.applicationContext = applicationContext;
+            this.entityManager = entityManager;
+        }
 
         /**
          * If a {@link MappingJackson2HttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
          */
         @Override
-        public void addArgumentResolvers(List<HandlerMethodArgumentResolver> argumentResolvers) {
+        public void addArgumentResolvers(@Nonnull List<HandlerMethodArgumentResolver> argumentResolvers) {
             if (mappingJackson2HttpMessageConverter != null) {
                 log.info("Adding MergedFormArgumentResolver to MVC application.");
                 argumentResolvers.add(new MergedFormMethodArgumentResolver(
