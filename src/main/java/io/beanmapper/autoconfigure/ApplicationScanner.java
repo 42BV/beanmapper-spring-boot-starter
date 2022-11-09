@@ -2,7 +2,6 @@ package io.beanmapper.autoconfigure;
 
 import static io.beanmapper.utils.Classes.forName;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Collections;
 import java.util.HashSet;
@@ -21,8 +20,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.classreading.MetadataReader;
-import org.springframework.core.type.classreading.MetadataReaderFactory;
 import org.springframework.core.type.filter.TypeFilter;
 
 /**
@@ -89,14 +86,10 @@ class ApplicationScanner {
     }
 
     private TypeFilter createTypeFilterForClass(Class<?> clazz) {
-        return new TypeFilter() {
-            @Override
-            public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
-                String className = metadataReader.getClassMetadata().getClassName();
-                Class<?> currentClass = Classes.forName(className);
-                return clazz.isAssignableFrom(currentClass);
-            }
+        return (metadataReader, metadataReaderFactory) -> {
+            String className = metadataReader.getClassMetadata().getClassName();
+            Class<?> currentClass = Classes.forName(className);
+            return clazz.isAssignableFrom(currentClass);
         };
     }
-
 }

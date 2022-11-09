@@ -21,9 +21,9 @@ public class BeanMapperProperties {
      */
     private boolean useHibernateUnproxy = true;
 
-    private Boolean applyStrictMappingConvention = true;
+    private boolean applyStrictMappingConvention = true;
 
-    private Boolean applySecuredProperties = true;
+    private boolean applySecuredProperties = true;
 
     private String strictSourceSuffix = "Form";
 
@@ -45,19 +45,19 @@ public class BeanMapperProperties {
         this.packagePrefix = basePackageName;
     }
 
-    public Boolean getApplyStrictMappingConvention() {
+    public boolean getApplyStrictMappingConvention() {
         return applyStrictMappingConvention;
     }
 
-    public void setApplyStrictMappingConvention(Boolean applyStrictMappingConvention) {
+    public void setApplyStrictMappingConvention(boolean applyStrictMappingConvention) {
         this.applyStrictMappingConvention = applyStrictMappingConvention;
     }
 
-    public Boolean getApplySecuredProperties() {
+    public boolean getApplySecuredProperties() {
         return applySecuredProperties;
     }
 
-    public void setApplySecuredProperties(Boolean applySecuredProperties) {
+    public void setApplySecuredProperties(boolean applySecuredProperties) {
         this.applySecuredProperties = applySecuredProperties;
     }
 

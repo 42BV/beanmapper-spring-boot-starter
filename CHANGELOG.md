@@ -14,6 +14,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [4.0.0] - 2022-09-15
 ### Upgrades
+- Upgraded beanmapper(4.0.1), beanmapper-spring(4.0.1).
+### Fixed
+- BeanMapper v4.0.1 adds a new converter, as such, a few tests had to be updated to use the appropriate expected values.
+
+## [4.0.0] - 2022-09-15
+### Upgrades
 - Upgraded beanmapper(4.0.0), beanmapper-spring(4.0.0) and spring-boot(2.7.3) dependencies.
 
 ## [3.2.0] - 2020-12-16
