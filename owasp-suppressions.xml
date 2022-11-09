@@ -17,4 +17,12 @@
         <cve>CVE-2022-38749</cve>
         <cve>CVE-2022-25857</cve>
     </suppress>
+    <suppress>
+        <notes>Fails due to spring-boot-starter-security, spring-boot-starter-web, waiting for fix from spring</notes>
+        <cve>CVE-2022-31690</cve>
+        <cve>CVE-2022-31692</cve>
+        <cve>CVE-2022-42252</cve>
+        <cve>CVE-2022-42003</cve>
+        <cve>CVE-2022-42004</cve>
+    </suppress>
 </suppressions>
