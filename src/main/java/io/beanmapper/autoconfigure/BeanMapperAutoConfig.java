@@ -1,14 +1,5 @@
 package io.beanmapper.autoconfigure;
 
-import static java.util.Collections.singletonList;
-import static org.springframework.beans.BeanUtils.instantiateClass;
-
-import java.util.List;
-
-import javax.annotation.Nonnull;
-import javax.annotation.PostConstruct;
-import javax.persistence.EntityManager;
-
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.config.BeanMapperBuilder;
@@ -20,7 +11,8 @@ import io.beanmapper.spring.security.SpringRoleSecuredCheck;
 import io.beanmapper.spring.unproxy.HibernateAwareBeanUnproxy;
 import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
-
+import jakarta.annotation.Nonnull;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
@@ -39,6 +31,11 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.util.List;
+
+import static java.util.Collections.singletonList;
+import static org.springframework.beans.BeanUtils.instantiateClass;
 
 /**
  * In no BeanMapper bean is found, it will be created with sensible webapplication/spring-data-jpa mapping defaults.
@@ -124,10 +121,10 @@ public class BeanMapperAutoConfig {
     }
 
     private void addAfterClearFlusher(BeanMapperBuilder builder) {
-        javax.persistence.EntityManager entityManager;
+        jakarta.persistence.EntityManager entityManager;
 
         try {
-            entityManager = applicationContext.getBean(javax.persistence.EntityManager.class);
+            entityManager = applicationContext.getBean(jakarta.persistence.EntityManager.class);
         } catch (NoSuchBeanDefinitionException e) {
             log.warn("No EntityManager bean has been configured within your application. BeanMapper's afterClearFlusher can not be activated.");
             return;
@@ -238,10 +235,10 @@ public class BeanMapperAutoConfig {
         private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
         private final BeanMapper beanMapper;
         private final ApplicationContext applicationContext;
-        private final EntityManager entityManager;
+        private final jakarta.persistence.EntityManager entityManager;
 
         public MergedFormConfig(@Autowired(required = false) final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter,
-                final BeanMapper beanMapper, final ApplicationContext applicationContext, @Autowired(required = false) final EntityManager entityManager) {
+                final BeanMapper beanMapper, final ApplicationContext applicationContext, @Autowired(required = false) final jakarta.persistence.EntityManager entityManager) {
             this.mappingJackson2HttpMessageConverter = mappingJackson2HttpMessageConverter;
             this.beanMapper = beanMapper;
             this.applicationContext = applicationContext;
@@ -267,7 +264,7 @@ public class BeanMapperAutoConfig {
     }
 
     private boolean isSpringDataJpaOnClasspath() {
-        return ClassUtils.isPresent("javax.persistence.EntityManager", applicationContext.getClassLoader());
+        return ClassUtils.isPresent("jakarta.persistence.EntityManager", applicationContext.getClassLoader());
     }
 
     private boolean isHibernateOnClasspath() {
@@ -277,4 +274,5 @@ public class BeanMapperAutoConfig {
     private boolean isSpringSecurityOnClasspath() {
         return ClassUtils.isPresent("org.springframework.security.authentication.AuthenticationManager", applicationContext.getClassLoader());
     }
+
 }

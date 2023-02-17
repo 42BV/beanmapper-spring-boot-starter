@@ -4,30 +4,30 @@
     
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
-    <version>4.1.2-SNAPSHOT</version>
+    <version>5.0.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>42 BeanMapper Spring Boot Starter</name>
     <description>Spring boot starter/autoconfig for BeanMapper</description>
     <inceptionYear>2017</inceptionYear>
-    <url>http://www.42.nl</url>
+    <url>https://www.42.nl</url>
     
     <organization>
         <name>42 BV</name>
-        <url>http://blog.42.nl/</url>
+        <url>https://www.42.nl</url>
     </organization>
     
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
         </license>
     </licenses>
     
     <scm>
         <url>https://github.com/42BV/beanmapper-spring-boot-starter</url>
-        <connection>scm:git:https://github.com/42BV/beanmapper-spring-boot-starter.git</connection>
-        <developerConnection>scm:git:https://github.com/42BV/beanmapper-spring-boot-starter.git</developerConnection>
+        <connection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     
@@ -59,9 +59,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <spring.boot.version>2.7.3</spring.boot.version>
-        <beanmapper.version>4.1.0</beanmapper.version>
-        <beanmapper.spring.version>4.1.1</beanmapper.spring.version>
+        <spring.boot.version>3.0.2</spring.boot.version>
+        <beanmapper.spring.version>5.0.0</beanmapper.spring.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.scm.provider.gitexe.version>1.13.0</maven.scm.provider.gitexe.version>
     </properties>
@@ -84,24 +83,17 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.7.5</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>2.7.5</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.beanmapper</groupId>
             <artifactId>beanmapper-spring</artifactId>
             <version>${beanmapper.spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.beanmapper</groupId>
-            <artifactId>beanmapper</artifactId>
-            <version>${beanmapper.version}</version>
         </dependency>
 
         <!-- TEST dependencies -->
@@ -140,7 +132,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>sonatype-nexus-staging</serverId>
@@ -148,6 +140,7 @@
                     <autoReleaseAfterClose>false</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
@@ -193,6 +186,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -207,6 +201,7 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -226,10 +221,11 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>7.1.2</version>
+                <version>8.1.0</version>
                 <configuration>
                     <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                     <skipProvidedScope>true</skipProvidedScope>

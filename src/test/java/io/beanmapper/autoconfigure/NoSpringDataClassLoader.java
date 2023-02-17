@@ -7,7 +7,7 @@ public class NoSpringDataClassLoader extends ClassLoader {
 
     @Override
     public Class<?> loadClass(String name) throws ClassNotFoundException {
-        if (name != null && !name.equals("javax.persistence.EntityManager") && !name.equals("org.hibernate.proxy.HibernateProxy")) {
+        if (name != null && !name.equals("jakarta.persistence.EntityManager") && !name.equals("org.hibernate.proxy.HibernateProxy")) {
             return super.loadClass(name);
         }
 
