@@ -10,12 +10,13 @@
         <cve>CVE-2016-1000027</cve>
     </suppress>
     <suppress>
-        <notes>Fails due to snakeyaml-1.30, waiting for fix from spring</notes>
+        <notes>Fails due to snakeyaml-1.33, waiting for fix from spring</notes>
         <cve>CVE-2022-38752</cve>
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38749</cve>
         <cve>CVE-2022-25857</cve>
+        <cve>CVE-2022-1471</cve>
     </suppress>
     <suppress>
         <notes>Fails due to spring-boot-starter-security, spring-boot-starter-web, waiting for fix from spring</notes>
