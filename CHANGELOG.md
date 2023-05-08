@@ -6,6 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Issues
+
+- Issue [#20](https://github.com/42BV/beanmapper-spring-boot-starter/issues/20), **Add support for LogicSecuredCheck as Spring Component**; Previous versions would not attempt to add implementations of the LogicSecuredCheck-interface annotated with @Component, to the BeanMapper-configuration. That has been fixed.
+
+### Changed
+
+- Upgraded beanmapper-spring (4.1.2)
+
 ## [4.1.1] - 2022-11-09
 ### Upgrades
 - Upgraded beanmapper-spring(4.1.1)

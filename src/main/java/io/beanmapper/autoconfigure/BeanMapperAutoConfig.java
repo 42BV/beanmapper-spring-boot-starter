@@ -24,6 +24,7 @@ import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -164,9 +165,15 @@ public class BeanMapperAutoConfig {
     private void addLogicSecuredChecks(BeanMapperBuilder builder, String basePackage) {
         collectionHandlerAppScanner.findLogicSecuredCheckClasses(basePackage).forEach(cls -> {
             LogicSecuredCheck<?, ?> logicSecuredCheck = instantiateClassAppContextOptional(cls, "logic secured check");
-            if (logicSecuredCheck != null) {
-                builder.addLogicSecuredCheck(logicSecuredCheck);
+            if (logicSecuredCheck == null) {
+                try {
+                    logicSecuredCheck = this.applicationContext.getBean(cls);
+                } catch (BeansException e) {
+                    log.error("Could not instantiate class [{}] as Spring Bean.", cls.getName());
+                    return;
+                }
             }
+            builder.addLogicSecuredCheck(logicSecuredCheck);
         });
     }
 

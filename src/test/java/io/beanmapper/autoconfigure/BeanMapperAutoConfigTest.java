@@ -11,6 +11,7 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import io.beanmapper.BeanMapper;
+import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.config.BeanMapperBuilder;
 import io.beanmapper.core.BeanPropertyMatch;
 import io.beanmapper.core.collections.CollectionHandler;
@@ -24,6 +25,7 @@ import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 
 import org.junit.After;
 import org.junit.Test;
+import org.junit.jupiter.params.ParameterizedTest;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
@@ -32,6 +34,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
@@ -133,6 +136,22 @@ public class BeanMapperAutoConfigTest {
         assertTrue(unproxyDelegate instanceof DefaultBeanUnproxy);
     }
 
+    @Test
+    public void autoconfig_shouldLoadLogicSecuredCheck() {
+        loadApplicationContext(ConfigWithLogicSecuredCheck.class);
+        var mapper = context.getBean(BeanMapper.class);
+        assertNotNull(mapper.getConfiguration().getLogicSecuredChecks().get(ConfigWithLogicSecuredCheck.LogicSecuredCheckImpl.class));
+    }
+
+    @Test
+    public void testLogicSecuredCheck_shouldReturnTrueWhenEqual() {
+        loadApplicationContext(ConfigWithLogicSecuredCheck.LogicSecuredCheckImpl.class);
+        var mapper = context.getBean(BeanMapper.class);
+        var lsc = (ConfigWithLogicSecuredCheck.LogicSecuredCheckImpl) mapper.getConfiguration().getLogicSecuredChecks().get(ConfigWithLogicSecuredCheck.LogicSecuredCheckImpl.class);
+        assertTrue(lsc.isAllowed("a", "a"));
+        assertFalse(lsc.isAllowed("b", "a"));
+    }
+
     @Configuration
     static class ConfigWithSpringData {
 
@@ -161,6 +180,17 @@ public class BeanMapperAutoConfigTest {
             return new BeanMapperBuilder().build();
         }
 
+    }
+
+    @Configuration
+    static class ConfigWithLogicSecuredCheck {
+        @Component
+        public static class LogicSecuredCheckImpl implements LogicSecuredCheck<String, String> {
+            @Override
+            public boolean isAllowed(String source, String target) {
+                return source.equals(target);
+            }
+        }
     }
 
     @Configuration
