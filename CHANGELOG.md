@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Updated
+
+- Upgraded BeanMapper-Spring (5.0.1)
+
 ## [5.0.0] - 2023-02-23
 - Upgrade to JDK 17 and Spring Boot 3
 
