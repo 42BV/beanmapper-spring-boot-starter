@@ -26,8 +26,8 @@
     
     <scm>
         <url>https://github.com/42BV/beanmapper-spring-boot-starter</url>
-        <connection>scm:git:https://github.com/42BV/beanmapper-spring-boot-starter.git</connection>
-        <developerConnection>scm:git:https://github.com/42BV/beanmapper-spring-boot-starter.git</developerConnection>
+        <connection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
     
@@ -83,24 +83,19 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
-            <version>2.7.5</version>
+            <version>2.7.11</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-security</artifactId>
-            <version>2.7.5</version>
+            <version>2.7.11</version>
             <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>io.beanmapper</groupId>
             <artifactId>beanmapper-spring</artifactId>
             <version>${beanmapper.spring.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>io.beanmapper</groupId>
-            <artifactId>beanmapper</artifactId>
-            <version>${beanmapper.version}</version>
         </dependency>
 
         <!-- TEST dependencies -->
@@ -139,7 +134,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>sonatype-nexus-staging</serverId>
@@ -228,7 +223,7 @@
             <plugin>
                 <groupId>org.owasp</groupId>
                 <artifactId>dependency-check-maven</artifactId>
-                <version>7.1.2</version>
+                <version>8.1.0</version>
                 <configuration>
                     <failBuildOnAnyVulnerability>true</failBuildOnAnyVulnerability>
                     <skipProvidedScope>true</skipProvidedScope>
