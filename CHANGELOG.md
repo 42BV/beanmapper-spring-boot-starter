@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Issues
+
+- [#21] Feature parity: Added support for LogicSecuredChecks as components. 
+
 ### Updated
 
 - Upgraded BeanMapper-Spring (5.0.1)
