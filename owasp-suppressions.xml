@@ -8,25 +8,19 @@
     <suppress>
         <notes> spring-core-5.3.20.jar and spring-tx-5.3.20.jar, waiting for fix from spring</notes>
         <cve>CVE-2016-1000027</cve>
-        <cve>CVE-2023-20863</cve>
-        <cve>CVE-2023-20861</cve>
-        <cve>CVE-2023-20860</cve>
     </suppress>
     <suppress>
         <notes>Fails due to snakeyaml-1.30, waiting for fix from spring</notes>
+        <cve>CVE-2022-41854</cve>
         <cve>CVE-2022-38752</cve>
         <cve>CVE-2022-38750</cve>
         <cve>CVE-2022-38751</cve>
         <cve>CVE-2022-38749</cve>
         <cve>CVE-2022-25857</cve>
+        <cve>CVE-2022-1471</cve>
     </suppress>
     <suppress>
-        <notes>Fails due to spring-boot-starter-security, spring-boot-starter-web, waiting for fix from spring</notes>
-        <cve>CVE-2022-31690</cve>
-        <cve>CVE-2022-31692</cve>
-        <cve>CVE-2022-42252</cve>
-        <cve>CVE-2022-42003</cve>
-        <cve>CVE-2022-42004</cve>
-        <cve>CVE-2023-20862</cve>
+        <notes>Fails due to jackson-core-2.13.5</notes>
+        <cve>CVE-2022-45688</cve>
     </suppress>
 </suppressions>
