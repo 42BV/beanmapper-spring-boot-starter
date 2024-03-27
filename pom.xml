@@ -1,7 +1,7 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
     <version>5.0.2-SNAPSHOT</version>
@@ -10,12 +10,12 @@
     <description>Spring boot starter/autoconfig for BeanMapper</description>
     <inceptionYear>2017</inceptionYear>
     <url>https://www.42.nl</url>
-    
+
     <organization>
         <name>42 BV</name>
         <url>https://www.42.nl</url>
     </organization>
-    
+
     <licenses>
         <license>
             <name>The Apache Software License, Version 2.0</name>
@@ -23,14 +23,14 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    
+
     <scm>
         <url>https://github.com/42BV/beanmapper-spring-boot-starter</url>
         <connection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</connection>
         <developerConnection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-    
+
     <developers>
         <developer>
             <name>Bas de Vos</name>
@@ -41,7 +41,7 @@
             <organization>42</organization>
         </developer>
     </developers>
-    
+
     <distributionManagement>
         <snapshotRepository>
             <id>ossrh</id>
@@ -52,19 +52,19 @@
             <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
         </repository>
     </distributionManagement>
-    
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
 
-        <spring.boot.version>3.0.2</spring.boot.version>
-        <beanmapper.spring.version>5.0.1</beanmapper.spring.version>
+        <spring.boot.version>3.2.1</spring.boot.version>
+        <beanmapper.spring.version>5.0.2</beanmapper.spring.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.scm.provider.gitexe.version>1.13.0</maven.scm.provider.gitexe.version>
     </properties>
-    
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -114,7 +114,7 @@
             </exclusions>
         </dependency>
     </dependencies>
-    
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -126,7 +126,7 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-    
+
     <build>
         <plugins>
             <plugin>
@@ -237,5 +237,5 @@
             </plugin>
         </plugins>
     </build>
-    
+
 </project>

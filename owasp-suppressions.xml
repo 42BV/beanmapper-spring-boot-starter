@@ -1,29 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress base="true">
-        <notes><![CDATA[ False positive - spring security crypto version not in CVE description ]]></notes>
-        <packageUrl regex="true">^pkg:maven/org\.springframework\.security/spring-security-crypto@.*$</packageUrl>
-        <cve>CVE-2020-5408</cve>
-    </suppress>
     <suppress>
-        <notes> spring-core-5.3.20.jar and spring-tx-5.3.20.jar, waiting for fix from spring</notes>
-        <cve>CVE-2016-1000027</cve>
-    </suppress>
-    <suppress>
-        <notes>Fails due to snakeyaml-1.33, waiting for fix from spring</notes>
-        <cve>CVE-2022-38752</cve>
-        <cve>CVE-2022-38750</cve>
-        <cve>CVE-2022-38751</cve>
-        <cve>CVE-2022-38749</cve>
-        <cve>CVE-2022-25857</cve>
-        <cve>CVE-2022-1471</cve>
-    </suppress>
-    <suppress>
-        <notes>Fails due to spring-boot-starter-security, spring-boot-starter-web, waiting for fix from spring</notes>
-        <cve>CVE-2022-31690</cve>
-        <cve>CVE-2022-31692</cve>
-        <cve>CVE-2022-42252</cve>
-        <cve>CVE-2022-42003</cve>
-        <cve>CVE-2022-42004</cve>
+        <notes>Remove when spring updates</notes>
+        <cve>CVE-2022-45688</cve>
+        <cve>CVE-2023-5072</cve>
+        <cve>CVE-2023-35116</cve>
+        <cve>CVE-2024-22233</cve>
+        <cve>CVE-2024-22234</cve>
+        <cve>CVE-2024-22257</cve>
+        <cve>CVE-2024-22243</cve>
+        <cve>CVE-2024-22233</cve>
+        <cve>CVE-2024-22233</cve>
     </suppress>
 </suppressions>
