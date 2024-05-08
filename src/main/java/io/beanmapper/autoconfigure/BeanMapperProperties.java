@@ -1,5 +1,7 @@
 package io.beanmapper.autoconfigure;
 
+import io.beanmapper.utils.diagnostics.DiagnosticsDetailLevel;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -28,6 +30,8 @@ public class BeanMapperProperties {
     private String strictSourceSuffix = "Form";
 
     private String strictTargetSuffix = "Result";
+
+    private DiagnosticsDetailLevel diagnosticsLevel = DiagnosticsDetailLevel.DISABLED;
 
     public boolean isUseHibernateUnproxy() {
         return useHibernateUnproxy;
@@ -75,5 +79,13 @@ public class BeanMapperProperties {
 
     public void setStrictTargetSuffix(String strictTargetSuffix) {
         this.strictTargetSuffix = strictTargetSuffix;
+    }
+
+    public DiagnosticsDetailLevel getDiagnosticsDetailLevel() {
+        return diagnosticsLevel;
+    }
+
+    public void setDiagnosticsDetailLevel(DiagnosticsDetailLevel diagnosticsLevel) {
+        this.diagnosticsLevel = diagnosticsLevel;
     }
 }
