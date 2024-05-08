@@ -4,7 +4,7 @@
 
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
-    <version>5.0.5</version>
+    <version>5.0.5-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>42 BeanMapper Spring Boot Starter</name>
     <description>Spring boot starter/autoconfig for BeanMapper</description>
@@ -28,7 +28,7 @@
         <url>https://github.com/42BV/beanmapper-spring-boot-starter</url>
         <connection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</connection>
         <developerConnection>scm:git:git@github.com:42BV/beanmapper-spring-boot-starter.git</developerConnection>
-        <tag>beanmapper-spring-boot-starter-5.0.5</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <developers>
@@ -60,7 +60,7 @@
         <maven.compiler.target>17</maven.compiler.target>
 
         <spring.boot.version>3.2.1</spring.boot.version>
-        <beanmapper.spring.version>5.0.5</beanmapper.spring.version>
+        <beanmapper.spring.version>5.0.4</beanmapper.spring.version>
         <maven.release.plugin.version>2.5.3</maven.release.plugin.version>
         <maven.scm.provider.gitexe.version>1.13.0</maven.scm.provider.gitexe.version>
     </properties>
@@ -205,7 +205,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.12</version>
+                <version>0.8.8</version>
                 <executions>
                     <execution>
                         <goals>
