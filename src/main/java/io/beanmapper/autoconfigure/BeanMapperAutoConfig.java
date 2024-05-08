@@ -13,6 +13,7 @@ import io.beanmapper.spring.web.MergedFormMethodArgumentResolver;
 import io.beanmapper.spring.web.converter.StructuredJsonMessageConverter;
 import jakarta.annotation.Nonnull;
 import jakarta.annotation.PostConstruct;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanInstantiationException;
@@ -28,6 +29,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
@@ -46,6 +48,7 @@ import static org.springframework.beans.BeanUtils.instantiateClass;
  * will be added to the Spring MVC context.
  */
 @Configuration
+@EnableAspectJAutoProxy
 @AutoConfigureAfter(WebMvcAutoConfiguration.class)
 @EnableConfigurationProperties(BeanMapperProperties.class)
 public class BeanMapperAutoConfig {
@@ -72,7 +75,7 @@ public class BeanMapperAutoConfig {
 
     /**
      * Creates a {@link BeanMapper} bean with spring-data-jpa defaults.
-     * If a {@link BeanMapperBuilderCustomizer} bean is found, uses this to 
+     * If a {@link BeanMapperBuilderCustomizer} bean is found, uses this to
      * customize the builder before the {@link BeanMapper} is build.
      * @return BeanMapper
      */
@@ -110,7 +113,11 @@ public class BeanMapperAutoConfig {
 
         setUnproxy(builder);
         customize(builder);
-        return builder.build();
+        BeanMapper beanMapper = builder.build();
+        if (props.getDiagnosticsDetailLevel().isEnabled()) {
+            beanMapper = beanMapper.wrap(props.getDiagnosticsDetailLevel()).build();
+        }
+        return beanMapper;
     }
 
     private void setSecuredChecks(BeanMapperBuilder builder, String packagePrefix) {
