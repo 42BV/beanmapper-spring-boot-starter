@@ -4,8 +4,9 @@
 
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
-    <version>6.0.1-SNAPSHOT</version>
+    <version>6.0.1-RC1</version>
     <packaging>jar</packaging>
+    
     <name>42 BeanMapper Spring Boot Starter</name>
     <description>Spring boot starter/autoconfig for BeanMapper</description>
     <inceptionYear>2017</inceptionYear>
@@ -34,24 +35,20 @@
     <developers>
         <developer>
             <name>Bas de Vos</name>
-            <organization>42</organization>
+            <organization>42 B.V.</organization>
+            <organizationUrl>https://www.42.nl</organizationUrl>
         </developer>
         <developer>
             <name>Robert Bor</name>
-            <organization>42</organization>
+            <organization>42 B.V.</organization>
+            <organizationUrl>https://www.42.nl</organizationUrl>
+        </developer>
+        <developer>
+            <name>Marcus Talbot</name>
+            <organization>42 B.V.</organization>
+            <organizationUrl>https://www.42.nl</organizationUrl>
         </developer>
     </developers>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-        </snapshotRepository>
-        <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -61,8 +58,6 @@
 
         <spring.boot.version>3.4.0</spring.boot.version>
         <beanmapper.spring.version>6.0.0</beanmapper.spring.version>
-        <maven.release.plugin.version>3.1.1</maven.release.plugin.version>
-        <maven.scm.provider.gitexe.version>2.1.0</maven.scm.provider.gitexe.version>
     </properties>
 
     <dependencies>
@@ -130,18 +125,6 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.7.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <serverId>sonatype-nexus-staging</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>false</autoReleaseAfterClose>
-                </configuration>
-            </plugin>
-
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>3.4.1</version>
@@ -153,24 +136,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>${maven.release.plugin.version}</version>
-                <dependencies>
-                    <!-- Fixes release commit creation on systems which are not in English -->
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-api</artifactId>
-                        <version>2.1.0</version>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.apache.maven.scm</groupId>
-                        <artifactId>maven-scm-provider-gitexe</artifactId>
-                        <version>${maven.scm.provider.gitexe.version}</version>
-                    </dependency>
-                </dependencies>
             </plugin>
 
             <plugin>
@@ -200,6 +165,16 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.7.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>central</publishingServerId>
+                </configuration>
             </plugin>
 
             <plugin>
