@@ -1,15 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
-    <suppress>
-        <notes>Remove when spring updates</notes>
-        <cve>CVE-2022-45688</cve>
-        <cve>CVE-2023-5072</cve>
-        <cve>CVE-2023-35116</cve>
-        <cve>CVE-2024-22233</cve>
-        <cve>CVE-2024-22234</cve>
-        <cve>CVE-2024-22257</cve>
-        <cve>CVE-2024-22243</cve>
-        <cve>CVE-2024-22233</cve>
-        <cve>CVE-2024-22233</cve>
-    </suppress>
+
 </suppressions>
