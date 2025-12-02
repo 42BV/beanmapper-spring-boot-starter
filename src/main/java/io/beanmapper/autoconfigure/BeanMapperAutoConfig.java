@@ -1,5 +1,10 @@
 package io.beanmapper.autoconfigure;
 
+import static java.util.Collections.singletonList;
+import static org.springframework.beans.BeanUtils.instantiateClass;
+
+import java.util.List;
+
 import io.beanmapper.BeanMapper;
 import io.beanmapper.annotations.LogicSecuredCheck;
 import io.beanmapper.config.BeanMapperBuilder;
@@ -24,27 +29,22 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
-import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.webmvc.autoconfigure.WebMvcAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import java.util.List;
-
-import static java.util.Collections.singletonList;
-import static org.springframework.beans.BeanUtils.instantiateClass;
 
 /**
  * In no BeanMapper bean is found, it will be created with sensible webapplication/spring-data-jpa mapping defaults.
  * It's possible to customize the BeanMapperBuilder by adding a bean of type {@link BeanMapperBuilderCustomizer}
  * to your configuration.
- * When a {@link MappingJackson2HttpMessageConverter} bean is found, a {@link MergedFormMethodArgumentResolver}
+ * When a {@link JacksonJsonHttpMessageConverter} bean is found, a {@link MergedFormMethodArgumentResolver}
  * will be added to the Spring MVC context.
  */
 @Configuration
@@ -246,28 +246,28 @@ public class BeanMapperAutoConfig {
     static class MergedFormConfig implements WebMvcConfigurer {
 
         private final Logger log = LoggerFactory.getLogger(MergedFormConfig.class);
-        private final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter;
+        private final JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter;
         private final BeanMapper beanMapper;
         private final ApplicationContext applicationContext;
         private final jakarta.persistence.EntityManager entityManager;
 
-        public MergedFormConfig(@Autowired(required = false) final MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter,
+        public MergedFormConfig(@Autowired(required = false) final JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter,
                 final BeanMapper beanMapper, final ApplicationContext applicationContext, @Autowired(required = false) final jakarta.persistence.EntityManager entityManager) {
-            this.mappingJackson2HttpMessageConverter = mappingJackson2HttpMessageConverter;
+            this.jacksonJsonHttpMessageConverter = jacksonJsonHttpMessageConverter;
             this.beanMapper = beanMapper;
             this.applicationContext = applicationContext;
             this.entityManager = entityManager;
         }
 
         /**
-         * If a {@link MappingJackson2HttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
+         * If a {@link JacksonJsonHttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
          */
         @Override
         public void addArgumentResolvers(@Nonnull List<HandlerMethodArgumentResolver> argumentResolvers) {
-            if (mappingJackson2HttpMessageConverter != null) {
+            if (jacksonJsonHttpMessageConverter != null) {
                 log.info("Adding MergedFormArgumentResolver to MVC application.");
                 argumentResolvers.add(new MergedFormMethodArgumentResolver(
-                        singletonList(new StructuredJsonMessageConverter(mappingJackson2HttpMessageConverter)),
+                        singletonList(new StructuredJsonMessageConverter(jacksonJsonHttpMessageConverter)),
                         beanMapper,
                         applicationContext,
                         entityManager));

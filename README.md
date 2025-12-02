@@ -1,8 +1,7 @@
 [![Build Status](https://github.com/42BV/beanmapper-spring-boot-starter/workflows/Java%20CI%20with%20Maven/badge.svg)](https://github.com/42BV/beanmapper-spring-boot-starter/actions?query=workflow%3A%22Java+CI+with+Maven%22)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5af36404b8634c1ab108257cd8ad85c2)](https://www.codacy.com/gh/42BV/beanmapper-spring-boot-starter/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=42BV/beanmapper-spring-boot-starter&amp;utm_campaign=Badge_Grade)
-[![BCH compliance](https://bettercodehub.com/edge/badge/42BV/beanmapper-spring-boot-starter?branch=master)](https://bettercodehub.com/)
 [![codecov](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter/branch/master/graph/badge.svg)](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring-boot-starter/badge.svg)](https://maven-badges.herokuapp.com/maven-central/io.beanmapper/beanmapper-spring-boot-starter)
+[![Maven Central](https://img.shields.io/maven-central/v/io.beanmapper/beanmapper-spring-boot-starter.svg?color=green)](https://central.sonatype.com/artifact/io.beanmapper/beanmapper-spring-boot-starter)
 [![Javadocs](https://www.javadoc.io/badge/io.beanmapper/beanmapper-spring-boot-starter.svg)](https://www.javadoc.io/doc/io.beanmapper/beanmapper-spring-boot-starter)
 [![Apache 2](http://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
@@ -27,7 +26,7 @@ Add this maven dependency to your project and you can start wiring the `BeanMapp
 <dependency>
     <groupId>io.beanmapper</groupId>
     <artifactId>beanmapper-spring-boot-starter</artifactId>
-    <version>4.1.1</version>
+    <version>7.0.0</version>
 </dependency>
 ```
 

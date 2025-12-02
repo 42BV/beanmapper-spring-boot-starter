@@ -3,18 +3,27 @@ package io.beanmapper.autoconfigure;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.persistence.CacheRetrieveMode;
+import jakarta.persistence.CacheStoreMode;
+import jakarta.persistence.ConnectionConsumer;
+import jakarta.persistence.ConnectionFunction;
 import jakarta.persistence.EntityGraph;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.FindOption;
 import jakarta.persistence.FlushModeType;
 import jakarta.persistence.LockModeType;
+import jakarta.persistence.LockOption;
 import jakarta.persistence.Query;
+import jakarta.persistence.RefreshOption;
 import jakarta.persistence.StoredProcedureQuery;
 import jakarta.persistence.TypedQuery;
+import jakarta.persistence.TypedQueryReference;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaDelete;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.CriteriaSelect;
 import jakarta.persistence.criteria.CriteriaUpdate;
 import jakarta.persistence.metamodel.Metamodel;
 
@@ -60,7 +69,22 @@ public class NoOpEntityManager implements EntityManager {
     }
 
     @Override
+    public <T> T find(Class<T> aClass, Object o, FindOption... findOptions) {
+        return null;
+    }
+
+    @Override
+    public <T> T find(EntityGraph<T> entityGraph, Object o, FindOption... findOptions) {
+        return null;
+    }
+
+    @Override
     public <T> T getReference(Class<T> entityClass, Object primaryKey) {
+        return null;
+    }
+
+    @Override
+    public <T> T getReference(T t) {
         return null;
     }
 
@@ -90,6 +114,11 @@ public class NoOpEntityManager implements EntityManager {
     }
 
     @Override
+    public void lock(Object o, LockModeType lockModeType, LockOption... lockOptions) {
+
+    }
+
+    @Override
     public void refresh(Object entity) {
 
     }
@@ -106,6 +135,11 @@ public class NoOpEntityManager implements EntityManager {
 
     @Override
     public void refresh(Object entity, LockModeType lockMode, Map<String, Object> properties) {
+
+    }
+
+    @Override
+    public void refresh(Object o, RefreshOption... refreshOptions) {
 
     }
 
@@ -130,6 +164,26 @@ public class NoOpEntityManager implements EntityManager {
     }
 
     @Override
+    public void setCacheRetrieveMode(CacheRetrieveMode cacheRetrieveMode) {
+
+    }
+
+    @Override
+    public void setCacheStoreMode(CacheStoreMode cacheStoreMode) {
+
+    }
+
+    @Override
+    public CacheRetrieveMode getCacheRetrieveMode() {
+        return null;
+    }
+
+    @Override
+    public CacheStoreMode getCacheStoreMode() {
+        return null;
+    }
+
+    @Override
     public void setProperty(String propertyName, Object value) {
 
     }
@@ -146,6 +200,11 @@ public class NoOpEntityManager implements EntityManager {
 
     @Override
     public <T> TypedQuery<T> createQuery(CriteriaQuery<T> criteriaQuery) {
+        return null;
+    }
+
+    @Override
+    public <T> TypedQuery<T> createQuery(CriteriaSelect<T> criteriaSelect) {
         return null;
     }
 
@@ -171,6 +230,11 @@ public class NoOpEntityManager implements EntityManager {
 
     @Override
     public <T> TypedQuery<T> createNamedQuery(String name, Class<T> resultClass) {
+        return null;
+    }
+
+    @Override
+    public <T> TypedQuery<T> createQuery(TypedQueryReference<T> typedQueryReference) {
         return null;
     }
 
@@ -276,6 +340,16 @@ public class NoOpEntityManager implements EntityManager {
 
     @Override
     public <T> List<EntityGraph<? super T>> getEntityGraphs(Class<T> entityClass) {
+        return null;
+    }
+
+    @Override
+    public <C> void runWithConnection(ConnectionConsumer<C> connectionConsumer) {
+
+    }
+
+    @Override
+    public <C, T> T callWithConnection(ConnectionFunction<C, T> connectionFunction) {
         return null;
     }
 }
