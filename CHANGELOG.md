@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.0.0] - 2025-12-02
+- Upgrade to Spring Boot 4.0.0
+
 ## [5.0.4] - 2024-04-11
 
 ### Updated
