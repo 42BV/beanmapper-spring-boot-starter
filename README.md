@@ -2,7 +2,7 @@
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/5af36404b8634c1ab108257cd8ad85c2)](https://app.codacy.com/gh/42BV/beanmapper-spring-boot-starter/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![codecov](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter/branch/master/graph/badge.svg)](https://codecov.io/gh/42BV/beanmapper-spring-boot-starter)
 [![Maven Central](https://img.shields.io/maven-central/v/io.beanmapper/beanmapper-spring-boot-starter.svg?color=green)](https://central.sonatype.com/artifact/io.beanmapper/beanmapper-spring-boot-starter)
-[![Javadocs](https://www.javadoc.io/badge/io.beanmapper/beanmapper-spring-boot-starter.svg)](https://www.javadoc.io/doc/io.beanmapper/beanmapper-spring-boot-starter)
+[![Javadocs](https://www.javadoc.io/badge2/io.beanmapper/beanmapper-spring-boot-starter/javadoc.svg)](https://www.javadoc.io/doc/io.beanmapper/beanmapper-spring-boot-starter)
 [![Apache 2](http://img.shields.io/badge/license-Apache%202-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # BeanMapper Spring Boot Starter
