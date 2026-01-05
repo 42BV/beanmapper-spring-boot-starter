@@ -55,7 +55,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.release>21</maven.compiler.release>
 
-        <spring.boot.version>4.0.0</spring.boot.version>
+        <spring.boot.version>4.0.1</spring.boot.version>
         <beanmapper.spring.version>7.0.0</beanmapper.spring.version>
 
         <dependency-check-maven.version>12.1.9</dependency-check-maven.version>

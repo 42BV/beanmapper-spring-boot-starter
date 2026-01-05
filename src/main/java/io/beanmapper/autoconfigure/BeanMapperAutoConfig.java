@@ -36,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.converter.json.JacksonJsonHttpMessageConverter;
+import tools.jackson.databind.json.JsonMapper;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -44,7 +45,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  * In no BeanMapper bean is found, it will be created with sensible webapplication/spring-data-jpa mapping defaults.
  * It's possible to customize the BeanMapperBuilder by adding a bean of type {@link BeanMapperBuilderCustomizer}
  * to your configuration.
- * When a {@link JacksonJsonHttpMessageConverter} bean is found, a {@link MergedFormMethodArgumentResolver}
+ * When a {@link JsonMapper} bean is found (Jackson is on the classpath), a {@link MergedFormMethodArgumentResolver}
  * will be added to the Spring MVC context.
  */
 @Configuration
@@ -246,33 +247,35 @@ public class BeanMapperAutoConfig {
     static class MergedFormConfig implements WebMvcConfigurer {
 
         private final Logger log = LoggerFactory.getLogger(MergedFormConfig.class);
-        private final JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter;
+        private final JsonMapper jsonMapper;
         private final BeanMapper beanMapper;
         private final ApplicationContext applicationContext;
         private final jakarta.persistence.EntityManager entityManager;
 
-        public MergedFormConfig(@Autowired(required = false) final JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter,
+        public MergedFormConfig(@Autowired(required = false) final JsonMapper jsonMapper,
                 final BeanMapper beanMapper, final ApplicationContext applicationContext, @Autowired(required = false) final jakarta.persistence.EntityManager entityManager) {
-            this.jacksonJsonHttpMessageConverter = jacksonJsonHttpMessageConverter;
+            this.jsonMapper = jsonMapper;
             this.beanMapper = beanMapper;
             this.applicationContext = applicationContext;
             this.entityManager = entityManager;
         }
 
         /**
-         * If a {@link JacksonJsonHttpMessageConverter} bean is found, adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
+         * If a {@link JsonMapper} bean is found (Jackson is on the classpath), creates a {@link JacksonJsonHttpMessageConverter}
+         * and adds a {@link MergedFormMethodArgumentResolver} to the Spring MVC context.
          */
         @Override
         public void addArgumentResolvers(@Nonnull List<HandlerMethodArgumentResolver> argumentResolvers) {
-            if (jacksonJsonHttpMessageConverter != null) {
+            if (jsonMapper != null) {
                 log.info("Adding MergedFormArgumentResolver to MVC application.");
+                JacksonJsonHttpMessageConverter jacksonJsonHttpMessageConverter = new JacksonJsonHttpMessageConverter(jsonMapper);
                 argumentResolvers.add(new MergedFormMethodArgumentResolver(
                         singletonList(new StructuredJsonMessageConverter(jacksonJsonHttpMessageConverter)),
                         beanMapper,
                         applicationContext,
                         entityManager));
             } else {
-                log.warn("No MergedFormArgumentResolver added to MVC application because no MappingJackson2HttpMessageConverter bean found!");
+                log.warn("No MergedFormArgumentResolver added to MVC application because no JsonMapper bean found!");
             }
         }
     }
