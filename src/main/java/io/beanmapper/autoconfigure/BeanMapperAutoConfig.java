@@ -159,10 +159,28 @@ public class BeanMapperAutoConfig {
         beanConverterAppScanner.findBeanPairInstructions().forEach(cls -> {
             BeanMapToClass beanMapToClass = cls.getDeclaredAnnotation(BeanMapToClass.class);
             BeanMapFromClass beanMapFromClass = cls.getDeclaredAnnotation(BeanMapFromClass.class);
-            if (beanMapToClass != null) {
-                builder.addBeanPairWithStrictSource(cls, beanMapToClass.target());
-            } else if (beanMapFromClass != null) {
-                builder.addBeanPairWithStrictTarget(beanMapFromClass.source(), cls);
+            try {
+                if (beanMapToClass != null) {
+                    builder.addBeanPairWithStrictSource(cls, beanMapToClass.target());
+                } else if (beanMapFromClass != null) {
+                    builder.addBeanPairWithStrictTarget(beanMapFromClass.source(), cls);
+                }
+            } catch (Exception e) {
+                String annotationType = beanMapToClass != null ? "@BeanMapToClass" : "@BeanMapFromClass";
+                String sourceClass = beanMapToClass != null ? cls.getSimpleName() : beanMapFromClass.source().getSimpleName();
+                String targetClass = beanMapToClass != null ? beanMapToClass.target().getSimpleName() : cls.getSimpleName();
+                
+                String detailedMessage = String.format(
+                    "Failed to configure BeanMapper strict mapping for %s annotation. " +
+                    "Source class: %s, Target class: %s. " +
+                    "This typically indicates a property mismatch between the classes. " +
+                    "Ensure all properties in the target class have corresponding properties in the source class. " +
+                    "Original error: %s", 
+                    annotationType, sourceClass, targetClass, 
+                    e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName()
+                );
+                
+                throw new RuntimeException(detailedMessage, e);
             }
         });
     }
