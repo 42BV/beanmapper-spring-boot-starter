@@ -56,7 +56,7 @@
         <maven.compiler.release>21</maven.compiler.release>
 
         <spring.boot.version>4.0.1</spring.boot.version>
-        <beanmapper.spring.version>7.0.1</beanmapper.spring.version>
+        <beanmapper.spring.version>7.0.2</beanmapper.spring.version>
 
         <dependency-check-maven.version>12.1.9</dependency-check-maven.version>
         <jacoco-maven-plugin.version>0.8.14</jacoco-maven-plugin.version>
