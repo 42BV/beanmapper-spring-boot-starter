@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [7.0.4] - 2026-08-31
+
+### Updated
+
+- Updated BeanMapper-Spring (7.0.3), which includes BeanMapper 6.0.3
+  (thread-safe BeanMatchStore, [beanmapper#223](https://github.com/42BV/beanmapper/issues/223))
+
 ## [7.0.0] - 2025-12-02
 - Upgrade to Spring Boot 4.0.0
 
